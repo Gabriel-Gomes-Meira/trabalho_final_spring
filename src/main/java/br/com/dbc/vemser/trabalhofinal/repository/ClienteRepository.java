@@ -2,14 +2,14 @@ package br.com.dbc.vemser.trabalhofinal.repository;
 
 import br.com.dbc.vemser.trabalhofinal.entity.Cliente;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
-import com.dbc.exceptions.BancoDeDadosException;
+import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class ClienteRepository implements com.dbc.repository.Repositorio<Integer, Cliente> {
+public class ClienteRepository implements Repositorio<Integer, Cliente> {
 
     @Override
     public Integer getProximoId(Connection connection) throws SQLException {
@@ -110,7 +110,7 @@ public class ClienteRepository implements com.dbc.repository.Repositorio<Integer
     }
 
     @Override
-    public boolean editar(Integer id, Cliente cliente) throws BancoDeDadosException {
+    public Cliente editar(Integer id, Cliente cliente) throws BancoDeDadosException {
         Connection con = null;
         try {
             con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
@@ -140,7 +140,7 @@ public class ClienteRepository implements com.dbc.repository.Repositorio<Integer
             stmt.setInt(index, id);
             int res = stmt.executeUpdate();
             System.out.println("editarCliente.res=" + res);
-            return res > 0;
+            return cliente;
         } catch (SQLException e) {
             throw new BancoDeDadosException(e.getCause());
         } finally {

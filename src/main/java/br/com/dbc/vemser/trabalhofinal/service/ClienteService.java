@@ -1,24 +1,22 @@
-package com.dbc.service;
+package br.com.dbc.vemser.trabalhofinal.service;
 
-import br.com.dbc.vemser.trabalhofinal.entity.Administrativo;
 import br.com.dbc.vemser.trabalhofinal.entity.Cliente;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
+import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import br.com.dbc.vemser.trabalhofinal.repository.ClienteRepository;
-import br.com.dbc.vemser.trabalhofinal.service.Service;
-import com.dbc.exceptions.BancoDeDadosException;
+
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
-public class ClienteService implements Service<Integer, Cliente> {
+public class ClienteService {
     private ClienteRepository clienteRepository;
 
     public ClienteService() {
         clienteRepository = new ClienteRepository();
     }
-
-    @Override
     public void adicionar(Cliente cliente) {
         try {
             Cliente clienteAdicionado = clienteRepository.adicionar(cliente);
@@ -28,8 +26,6 @@ public class ClienteService implements Service<Integer, Cliente> {
             e.printStackTrace();
         }
     }
-
-    @Override
     public void remover(Integer id) {
         try {
             boolean conseguiuRemover = clienteRepository.remover(id);
@@ -38,25 +34,23 @@ public class ClienteService implements Service<Integer, Cliente> {
             e.printStackTrace();
         }
     }
-
-    @Override
     public void editar(Integer id, Cliente cliente) {
         try {
-            boolean conseguiuEditar = clienteRepository.editar(id, cliente);
-            System.out.println("editado? " + conseguiuEditar + "| com id=" + id);
+//            boolean conseguiuEditar =
+            clienteRepository.editar(id, cliente);
+//            System.out.println("editado? " + conseguiuEditar + "| com id=" + id);
 
         } catch (BancoDeDadosException e) {
             e.printStackTrace();
         }
     }
-
-    @Override
-    public void listar() {
+    public List<Usuario> listar() {
         try {
             clienteRepository.listar().forEach(System.out::println);
         } catch (BancoDeDadosException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public void mostrarInformacoesClienteUsuario(Usuario usuarioAtivo){

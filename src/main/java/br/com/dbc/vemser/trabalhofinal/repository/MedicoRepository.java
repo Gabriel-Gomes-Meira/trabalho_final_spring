@@ -1,15 +1,16 @@
-package com.dbc.repository;
+package br.com.dbc.vemser.trabalhofinal.repository;
 
 import br.com.dbc.vemser.trabalhofinal.entity.Medico;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
-import com.dbc.exceptions.BancoDeDadosException;
+import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
+import br.com.dbc.vemser.trabalhofinal.repository.Repositorio;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MedicoRepository implements com.dbc.repository.Repositorio<Integer, Medico> {
+public class MedicoRepository implements Repositorio<Integer, Medico> {
     @Override
     public Integer getProximoId(Connection connection) throws BancoDeDadosException {
         try {
@@ -95,7 +96,7 @@ public class MedicoRepository implements com.dbc.repository.Repositorio<Integer,
     }
 
     @Override
-    public boolean editar(Integer id, Medico medico) throws BancoDeDadosException {
+    public Medico editar(Integer id, Medico medico) throws BancoDeDadosException {
         Connection con = null;
         try {
             con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
@@ -138,7 +139,7 @@ public class MedicoRepository implements com.dbc.repository.Repositorio<Integer,
             int res = stmt.executeUpdate();
             System.out.println("editarMedico.res=" + res);
 
-            return res > 0;
+            return medico;
         } catch (SQLException e) {
             throw new BancoDeDadosException(e.getCause());
         } finally {

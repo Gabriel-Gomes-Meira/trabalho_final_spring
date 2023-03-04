@@ -2,15 +2,15 @@ package br.com.dbc.vemser.trabalhofinal.service;
 
 import br.com.dbc.vemser.trabalhofinal.entity.Agendamento;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
+import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import br.com.dbc.vemser.trabalhofinal.repository.AgendamentoRepository;
-import com.dbc.exceptions.BancoDeDadosException;
 
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AgendamentoService implements Service<Integer, Agendamento> {
+public class AgendamentoService {
 
     private AgendamentoRepository agendamentoRepository;
 
@@ -19,7 +19,6 @@ public class AgendamentoService implements Service<Integer, Agendamento> {
     }
 
 
-    @Override
     public void adicionar(Agendamento agendamento) {
         try {
             Agendamento agendamentoAdicionado = agendamentoRepository.adicionar(agendamento);
@@ -32,7 +31,6 @@ public class AgendamentoService implements Service<Integer, Agendamento> {
         }
     }
 
-    @Override
     public void remover(Integer id) {
         try {
             boolean conseguiuRemover = agendamentoRepository.remover(id);
@@ -43,24 +41,23 @@ public class AgendamentoService implements Service<Integer, Agendamento> {
     }
 
 
-    @Override
     public void editar(Integer id, Agendamento agendamento) {
         try {
-            boolean conseguiuEditar = agendamentoRepository.editar(id, agendamento);
-            System.out.println("editado? " + conseguiuEditar + "| com id=" + id);
+            agendamentoRepository.editar(id, agendamento);
+//            System.out.println("editado? " + conseguiuEditar + "| com id=" + id);
 
         } catch (BancoDeDadosException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
-    public void listar() {
+    public List<Usuario> listar() {
         try {
             agendamentoRepository.listar().forEach(System.out::println);
         } catch (BancoDeDadosException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public void mostrarAgendamentosUsuario(Usuario usuarioAtivo){

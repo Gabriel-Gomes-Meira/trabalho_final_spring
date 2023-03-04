@@ -2,7 +2,7 @@ package br.com.dbc.vemser.trabalhofinal.repository;
 
 import br.com.dbc.vemser.trabalhofinal.entity.Agendamento;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
-import com.dbc.exceptions.BancoDeDadosException;
+import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class AgendamentoRepository implements com.dbc.repository.Repositorio<Integer, Agendamento> {
+public class AgendamentoRepository implements Repositorio<Integer, Agendamento> {
 
 
     @Override
@@ -128,7 +128,7 @@ public class AgendamentoRepository implements com.dbc.repository.Repositorio<Int
     }
 
     @Override
-    public boolean editar(Integer id, Agendamento agendamento) throws BancoDeDadosException {
+    public Agendamento editar(Integer id, Agendamento agendamento) throws BancoDeDadosException {
         Connection con = null;
         try {
             con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
@@ -179,7 +179,7 @@ public class AgendamentoRepository implements com.dbc.repository.Repositorio<Int
             stmt.setInt(index, id);
             int res = stmt.executeUpdate();
             System.out.println("editarAgendamento.res=" + res);
-            return res > 0;
+            return agendamento;
         } catch (SQLException e) {
             throw new BancoDeDadosException(e.getCause());
         } finally {

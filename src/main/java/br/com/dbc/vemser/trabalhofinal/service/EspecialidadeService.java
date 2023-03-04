@@ -1,19 +1,20 @@
 package br.com.dbc.vemser.trabalhofinal.service;
 
-import br.com.dbc.vemser.trabalhofinal.entity.Administrativo;
 import br.com.dbc.vemser.trabalhofinal.entity.Especialidade;
+import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
+import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import br.com.dbc.vemser.trabalhofinal.repository.EspecialidadeRepository;
-import com.dbc.exceptions.BancoDeDadosException;
+
+import java.util.List;
 
 
-public class EspecialidadeService implements Service<Integer, Especialidade> {
+public class EspecialidadeService {
     private EspecialidadeRepository especialidadeRepository;
 
     public EspecialidadeService() {
         especialidadeRepository = new EspecialidadeRepository();
     }
 
-    @Override
     // criação de um objeto
     public void adicionar(Especialidade especialidade) {
         try {
@@ -27,7 +28,6 @@ public class EspecialidadeService implements Service<Integer, Especialidade> {
         }
     }
 
-    @Override
     // remoção
     public void remover(Integer id) {
         try {
@@ -39,26 +39,26 @@ public class EspecialidadeService implements Service<Integer, Especialidade> {
     }
 
 
-    @Override
     // atualização de um objeto
     public void editar(Integer id, Especialidade especialidade) {
         try {
-            boolean conseguiuEditar = especialidadeRepository.editar(id, especialidade);
-            System.out.println("editado? " + conseguiuEditar + "| com id=" + id);
+//            boolean conseguiuEditar =
+            especialidadeRepository.editar(id, especialidade);
+//            System.out.println("editado? " + conseguiuEditar + "| com id=" + id);
 
         } catch (BancoDeDadosException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
     // leitura
-    public void listar() {
+    public List<Usuario> listar() {
         try {
             especialidadeRepository.listar().forEach(System.out::println);
         } catch (BancoDeDadosException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
 }

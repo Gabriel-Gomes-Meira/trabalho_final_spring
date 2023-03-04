@@ -1,4 +1,4 @@
-package com.dbc.exceptions;
+package br.com.dbc.vemser.trabalhofinal.exceptions;
 
 import java.sql.SQLException;
 

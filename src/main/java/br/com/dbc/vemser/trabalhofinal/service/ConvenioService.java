@@ -1,20 +1,20 @@
-package com.dbc.service;
+package br.com.dbc.vemser.trabalhofinal.service;
 
-import br.com.dbc.vemser.trabalhofinal.entity.Administrativo;
 import br.com.dbc.vemser.trabalhofinal.entity.Convenio;
-import br.com.dbc.vemser.trabalhofinal.service.Service;
-import com.dbc.exceptions.BancoDeDadosException;
-import com.dbc.repository.ConvenioRepository;
+import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
+import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
+import br.com.dbc.vemser.trabalhofinal.repository.ConvenioRepository;
+
+import java.util.List;
 
 
-public class ConvenioService implements Service<Integer, Convenio> {
+public class ConvenioService {
     private ConvenioRepository convenioRepository;
 
     public ConvenioService() {
         convenioRepository = new ConvenioRepository();
     }
 
-    @Override
     public void adicionar(Convenio convenio) {
         try {
             Convenio enderecoAdicionado = convenioRepository.adicionar(convenio);
@@ -25,7 +25,6 @@ public class ConvenioService implements Service<Integer, Convenio> {
         }
     }
 
-    @Override
     public void remover(Integer id) {
         try {
             boolean conseguiuRemover = convenioRepository.remover(id);
@@ -35,24 +34,24 @@ public class ConvenioService implements Service<Integer, Convenio> {
         }
     }
 
-    @Override
     public void editar(Integer id, Convenio convenio) {
         try {
-            boolean conseguiuEditar = convenioRepository.editar(id, convenio);
-            System.out.println("editado? " + conseguiuEditar + "| com id=" + id);
+//            boolean conseguiuEditar =
+            convenioRepository.editar(id, convenio);
+//            System.out.println("editado? " + conseguiuEditar + "| com id=" + id);
 
         } catch (BancoDeDadosException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
-    public void listar() {
+    public List<Usuario> listar() {
         try {
             convenioRepository.listar().forEach(System.out::println);
         } catch (BancoDeDadosException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
 

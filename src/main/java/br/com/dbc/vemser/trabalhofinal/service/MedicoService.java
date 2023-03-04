@@ -1,24 +1,22 @@
 package br.com.dbc.vemser.trabalhofinal.service;
 
-import br.com.dbc.vemser.trabalhofinal.entity.Administrativo;
 import br.com.dbc.vemser.trabalhofinal.entity.Medico;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
-import br.com.dbc.vemser.trabalhofinal.service.Service;
-import com.dbc.exceptions.BancoDeDadosException;
 
-import com.dbc.repository.MedicoRepository;
+import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
+import br.com.dbc.vemser.trabalhofinal.repository.MedicoRepository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class MedicoService implements Service<Integer, Medico> {
+public class MedicoService{
     private MedicoRepository medicoRepository;
 
     public MedicoService() {
         medicoRepository = new MedicoRepository();
     }
 
-    @Override
     public void adicionar(Medico medico) {
         try {
             Medico medicoAdicionado = medicoRepository.adicionar(medico);
@@ -31,7 +29,6 @@ public class MedicoService implements Service<Integer, Medico> {
         }
     }
 
-    @Override
     public void remover(Integer id) {
         try {
             boolean conseguiuRemover = medicoRepository.remover(id);
@@ -41,24 +38,24 @@ public class MedicoService implements Service<Integer, Medico> {
         }
     }
 
-    @Override
     public void editar(Integer id, Medico medico) {
         try {
-            boolean conseguiuEditar = medicoRepository.editar(id, medico);
-            System.out.println("editado? " + conseguiuEditar + "| com id=" + id);
+//            boolean conseguiuEditar =
+            medicoRepository.editar(id, medico);
+//            System.out.println("editado? " + conseguiuEditar + "| com id=" + id);
 
         } catch (BancoDeDadosException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
-    public void listar() {
+    public List<Usuario> listar() {
         try {
             medicoRepository.listar().forEach(System.out::println);
         } catch (BancoDeDadosException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public void mostrarInformacoesMedicoUsuario(Usuario usuarioAtivo){

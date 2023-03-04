@@ -1,13 +1,13 @@
-package com.dbc.repository;
+package br.com.dbc.vemser.trabalhofinal.repository;
 
 import br.com.dbc.vemser.trabalhofinal.entity.Convenio;
-import com.dbc.exceptions.BancoDeDadosException;
+import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConvenioRepository implements com.dbc.repository.Repositorio<Integer, Convenio> {
+public class ConvenioRepository implements Repositorio<Integer, Convenio> {
 
 
     @Override
@@ -93,7 +93,7 @@ public class ConvenioRepository implements com.dbc.repository.Repositorio<Intege
     }
 
     @Override
-    public boolean editar(Integer id, Convenio convenio) throws BancoDeDadosException {
+    public Convenio editar(Integer id, Convenio convenio) throws BancoDeDadosException {
         Connection con = null;
         try {
             con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
@@ -125,7 +125,7 @@ public class ConvenioRepository implements com.dbc.repository.Repositorio<Intege
 
             int res = stmt.executeUpdate();
             System.out.println("editarConvenio.res=" + res);
-            return res > 0;
+            return convenio;
         } catch (SQLException e) {
             throw new BancoDeDadosException(e.getCause());
         } finally {

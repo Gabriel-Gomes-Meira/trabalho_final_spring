@@ -1,101 +1,126 @@
 package br.com.dbc.vemser.trabalhofinal.service;
 
-import br.com.dbc.vemser.trabalhofinal.entity.Administrativo;
-import br.com.dbc.vemser.trabalhofinal.entity.Cliente;
-import br.com.dbc.vemser.trabalhofinal.entity.Medico;
+import br.com.dbc.vemser.trabalhofinal.dtos.UsuarioCreateDTO;
+import br.com.dbc.vemser.trabalhofinal.dtos.UsuarioDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
-import br.com.dbc.vemser.trabalhofinal.repository.AdministrativoRepository;
-import br.com.dbc.vemser.trabalhofinal.repository.ClienteRepository;
+import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
+import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.repository.UsuarioRepository;
-import com.dbc.exceptions.BancoDeDadosException;
-
-import com.dbc.repository.MedicoRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
+import java.util.Objects;
 
-public class UsuarioService implements Service<Integer, Usuario> {
 
-    private UsuarioRepository usuarioRepository;
+@org.springframework.stereotype.Service
+public class UsuarioService {
 
-    public UsuarioService() {
-        usuarioRepository = new UsuarioRepository();
+    private final UsuarioRepository usuarioRepository;
+    private final ObjectMapper objectMapper;
+
+    public UsuarioService(UsuarioRepository usuarioRepository, ObjectMapper objectMapper) {
+        this.usuarioRepository = usuarioRepository;
+        this.objectMapper = objectMapper;
     }
 
-    @Override
-    public void adicionar(Usuario usuario) {
+    public UsuarioDTO adicionar(UsuarioCreateDTO usuario) throws RegraDeNegocioException {
         try {
-            Usuario usuarioAdicionado = usuarioRepository.adicionar(usuario);
-            System.out.println("Usuário adicinado com sucesso! " + usuarioAdicionado);
-
+            return objectMapper.convertValue(usuarioRepository.adicionar(validarUsuario(objectMapper.convertValue(usuario, Usuario.class))), UsuarioDTO.class);
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Erro no Banco!");
         }
     }
 
-    @Override
-    public void remover(Integer id) {
+    public void remover(Integer id) throws RegraDeNegocioException {
         try {
-            boolean conseguiuRemover = usuarioRepository.remover(id);
-            System.out.println("removido? " + conseguiuRemover + "| com id=" + id);
+            verificarSeExiste(id);
+            usuarioRepository.remover(id);
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Erro no Banco!");
         }
     }
 
-    @Override
-    public void editar(Integer id, Usuario usuario) {
+    public UsuarioDTO editar(Integer id, UsuarioCreateDTO usuario) throws RegraDeNegocioException {
         try {
-            boolean conseguiuEditar = usuarioRepository.editar(id, usuario);
-            System.out.println("editado? " + conseguiuEditar + "| com id=" + id);
-
+            Usuario usarioEditar = objectMapper.convertValue(usuario, Usuario.class);
+            usarioEditar.setIdUsuario(id);
+            return objectMapper.convertValue(usuarioRepository.editar(id, validarUsuario(usarioEditar)), UsuarioDTO.class);
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Erro no Banco!");
         }
     }
 
-    @Override
-    public void listar() {
+
+    public List<UsuarioDTO> listar() throws RegraDeNegocioException {
         try {
-            usuarioRepository.listar().forEach(System.out::println);
+            return usuarioRepository.listar().stream().map(usuario -> { return objectMapper.convertValue(usuario, UsuarioDTO.class);}).toList();
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Erro no banco!");
         }
     }
 
-    public Usuario findUser(String email, String password) {
+    // Pensando se passamos essa validação pro Banco, afim de ganhar mais performance
+    private Usuario validarUsuario(Usuario usuario) throws RegraDeNegocioException {
+        try {
+
+            if (usuario.getIdUsuario() != null) {
+                verificarSeExiste(usuario.getIdUsuario());
+            }
+
+            // Estou iterando com 'fori comum' pois não consigo levantar exceções dentro do forEach. Apesar de poder tratálos...
+            List<Usuario> usuarios = usuarioRepository.listar();
+            for (int i = 0; i < usuarios.size(); i++) {
+                //Quando estivermos atualizando, devemos verifiar se email e cpf já existem em outro usuário ALÉM do que está sendo atualizado.
+                if(usuarios.get(i).getCpf().equals(usuario.getCpf()) && (usuario.getIdUsuario()!=null &&
+                                                                    !Objects.equals(usuarios.get(i).getIdUsuario(), usuario.getIdUsuario()))){
+                    throw new RegraDeNegocioException("Já existe usuário com esse CPF!");
+                }
+                if (usuarios.get(i).getEmail().equals(usuario.getEmail()) && (usuario.getIdUsuario()!=null &&
+                                                                    !Objects.equals(usuarios.get(i).getIdUsuario(), usuario.getIdUsuario()))) {
+                    throw new RegraDeNegocioException("Já existe usuário com esse e-mail!");
+                }
+            }
+
+            return  usuario;
+        } catch (BancoDeDadosException e) {
+            throw new RegraDeNegocioException("Erro no Banco!");
+        }
+    }
+
+
+
+    private void verificarSeExiste(Integer id) throws RegraDeNegocioException{
+        try {
+            usuarioRepository.listar().stream()
+                    .filter(pessoa -> pessoa.getIdUsuario().equals(id))
+                    .findFirst()
+                    .orElseThrow(() -> new RegraDeNegocioException("Usuário não encontrado!"));
+        } catch (BancoDeDadosException e) {
+            throw new RegraDeNegocioException("Erro no Banco!");
+        }
+    }
+
+    // Verifica a disponilidade do id_usuario
+
+    public boolean verificarIdUsuario(Integer id) throws RegraDeNegocioException {
+        try {
+            return usuarioRepository.verificarSeDisponivel(id);
+        } catch (BancoDeDadosException e){
+            throw new RegraDeNegocioException("Erro no banco!");
+        }
+    }
+
+    public boolean authUser(String email, String password) throws RegraDeNegocioException {
         try {
             List<Usuario> tempList = usuarioRepository.listar().stream().filter(usuario -> usuario.getEmail().equals(email)
                     && usuario.getSenha().equals(password)).toList();
             if(tempList.size() > 0){
-                return tempList.get(0);
+                return true;
             }else{
-                return null;
+                return false;
             }
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
-            return null;
+            throw new RegraDeNegocioException("Erro no banco!");
         }
     }
-
-    public boolean verificarIdUsuario(Integer id) {
-
-        AdministrativoRepository administrativoRepository = new AdministrativoRepository();
-        MedicoRepository medicoRepository = new MedicoRepository();
-        ClienteRepository clienteRepository = new ClienteRepository();
-
-        try {
-            List<Administrativo> tempListAdministrativos = administrativoRepository.listar().stream().filter(administrativo -> administrativo.getIdUsuario() == id).toList();
-            List<Medico> tempListMedicos = medicoRepository.listar().stream().filter(medico -> medico.getIdUsuario() == id).toList();
-            List<Cliente> tempListClientes = clienteRepository.listar().stream().filter(cliente -> cliente.getIdUsuario().equals(id)).toList();
-
-
-            return (tempListAdministrativos.size() + tempListMedicos.size() + tempListClientes.size()) > 0;
-        } catch (BancoDeDadosException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
 }

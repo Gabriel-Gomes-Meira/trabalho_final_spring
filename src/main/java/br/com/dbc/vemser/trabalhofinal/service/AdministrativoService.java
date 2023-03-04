@@ -1,11 +1,14 @@
 package br.com.dbc.vemser.trabalhofinal.service;
 
 import br.com.dbc.vemser.trabalhofinal.entity.Administrativo;
+import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
+import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import br.com.dbc.vemser.trabalhofinal.repository.AdministrativoRepository;
-import com.dbc.exceptions.BancoDeDadosException;
 import com.dbc.exceptions.ValorDeEntradaException;
 
-public class AdministrativoService implements Service<Integer, Administrativo> {
+import java.util.List;
+
+public class AdministrativoService {
 
     private AdministrativoRepository administrativoRepository;
 
@@ -13,7 +16,6 @@ public class AdministrativoService implements Service<Integer, Administrativo> {
         administrativoRepository = new AdministrativoRepository();
     }
 
-    @Override
     public void adicionar(Administrativo administrativo) {
         try {
             Administrativo administrativoAdicionado = administrativoRepository.adicionar(administrativo);
@@ -24,7 +26,6 @@ public class AdministrativoService implements Service<Integer, Administrativo> {
         }
     }
 
-    @Override
     public void remover(Integer id) {
 
         try {
@@ -36,24 +37,24 @@ public class AdministrativoService implements Service<Integer, Administrativo> {
 
     }
 
-    @Override
     public void editar(Integer id, Administrativo administrativo) {
         try {
-            boolean conseguiuEditar = administrativoRepository.editar(id, administrativo);
-            System.out.println("editado? " + conseguiuEditar + "| com id=" + id);
+//            boolean conseguiuEditar =
+            administrativoRepository.editar(id, administrativo);
+//            System.out.println("editado? " + conseguiuEditar + "| com id=" + id);
 
         } catch (BancoDeDadosException | ValorDeEntradaException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
-    public void listar() {
+    public List<Usuario> listar() {
         try {
             administrativoRepository.listar().forEach(System.out::println);
         } catch (BancoDeDadosException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
 

@@ -1,13 +1,13 @@
 package br.com.dbc.vemser.trabalhofinal.repository;
 
 import br.com.dbc.vemser.trabalhofinal.entity.Administrativo;
-import com.dbc.exceptions.BancoDeDadosException;
+import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdministrativoRepository implements com.dbc.repository.Repositorio<Integer, Administrativo> {
+public class AdministrativoRepository implements Repositorio<Integer, Administrativo> {
 
 
     @Override
@@ -93,7 +93,7 @@ public class AdministrativoRepository implements com.dbc.repository.Repositorio<
     }
 
     @Override
-    public boolean editar(Integer id, Administrativo administrativo) throws BancoDeDadosException {
+    public Administrativo editar(Integer id, Administrativo administrativo) throws BancoDeDadosException {
         Connection con = null;
         try {
             con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
@@ -110,7 +110,7 @@ public class AdministrativoRepository implements com.dbc.repository.Repositorio<
             int res = stmt.executeUpdate();
             System.out.println("editarAdministrativo.res=" + res);
 
-            return res > 0;
+            return administrativo;
         } catch (SQLException e) {
             throw new BancoDeDadosException(e.getCause());
         } finally {
