@@ -233,4 +233,38 @@ public class UsuarioRepository implements Repositorio<Integer, Usuario> {
             }
         }
     }
+
+    public Usuario getUmId(Integer id) throws BancoDeDadosException {
+        Usuario usuario = null;
+        Connection con = null;
+        try {
+            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+
+            String sql = "SELECT * " +
+                    " FROM USUARIO WHERE id_usuario = ?" ;
+
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, id);
+
+            // Executa-se a consulta
+            ResultSet res = stmt.executeQuery(sql);
+
+            if (res.next()) {
+                usuario = getUsuarioFromResultSet(res);
+            }
+
+            return usuario;
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new BancoDeDadosException(e.getCause());
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

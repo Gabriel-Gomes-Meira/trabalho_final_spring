@@ -89,12 +89,20 @@ public class UsuarioService {
 
 
 
-    private void verificarSeExiste(Integer id) throws RegraDeNegocioException{
+//    public Usuario verificarSeExiste(Integer id) throws RegraDeNegocioException{
+//        try {
+//           return usuarioRepository.listar().stream()
+//                    .filter(pessoa -> pessoa.getIdUsuario().equals(id))
+//                    .findFirst()
+//                    .orElseThrow(() -> new RegraDeNegocioException("Usuário não encontrado!"));
+//        } catch (BancoDeDadosException e) {
+//            throw new RegraDeNegocioException("Erro no Banco!");
+//        }
+//    }
+
+    public Usuario verificarSeExiste(Integer id) throws RegraDeNegocioException{
         try {
-            usuarioRepository.listar().stream()
-                    .filter(pessoa -> pessoa.getIdUsuario().equals(id))
-                    .findFirst()
-                    .orElseThrow(() -> new RegraDeNegocioException("Usuário não encontrado!"));
+            return usuarioRepository.getUmId(id);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no Banco!");
         }

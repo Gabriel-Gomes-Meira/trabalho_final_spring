@@ -5,6 +5,7 @@ import br.com.dbc.vemser.trabalhofinal.dtos.ConvenioCreateDTO;
 import br.com.dbc.vemser.trabalhofinal.dtos.ConvenioDTO;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.service.ConvenioService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,13 +17,10 @@ import java.util.List;
 @Validated
 @RestController
 @RequestMapping("/convenio")
+@RequiredArgsConstructor
 public class ConvenioController {
 
     private final ConvenioService convenioService;
-
-    public ConvenioController(ConvenioService convenioService) {
-        this.convenioService = convenioService;
-    }
 
     @GetMapping
     public ResponseEntity<List<ConvenioDTO>> listAll() throws RegraDeNegocioException {
