@@ -102,17 +102,14 @@ public class UsuarioService {
 
     public Usuario verificarSeExiste(Integer id) throws RegraDeNegocioException{
         try {
-            return usuarioRepository.getUmId(id);
-    public UsuarioDTO verificarSeExiste(Integer id) throws RegraDeNegocioException{
-        try {
-            Usuario usuarioAchado = usuarioRepository.listar().stream()
-                    .filter(pessoa -> pessoa.getIdUsuario().equals(id))
-                    .findFirst()
-                    .orElseThrow(() -> new RegraDeNegocioException("Usuário não encontrado!"));
-            return objectMapper.convertValue(usuarioAchado, UsuarioDTO.class);
+            return  usuarioRepository.getUmId(id);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no Banco!");
         }
+    }
+
+    public UsuarioDTO getOne(Integer id) throws RegraDeNegocioException {
+        return objectMapper.convertValue(verificarSeExiste(id), UsuarioDTO.class);
     }
 
     // Verifica a disponilidade do id_usuario

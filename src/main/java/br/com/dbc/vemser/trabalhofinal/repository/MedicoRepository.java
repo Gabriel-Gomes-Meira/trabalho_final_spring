@@ -4,12 +4,14 @@ import br.com.dbc.vemser.trabalhofinal.entity.Medico;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import br.com.dbc.vemser.trabalhofinal.repository.Repositorio;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@Repository
 public class
 MedicoRepository implements Repositorio<Integer, Medico> {
     @Override
@@ -33,7 +35,7 @@ MedicoRepository implements Repositorio<Integer, Medico> {
     public Medico adicionar(Medico medico) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+            con = ConexaoBancoDeDados.getConnection();
 
             Integer proximoId = this.getProximoId(con);
             medico.setIdMedico(proximoId);
@@ -70,7 +72,7 @@ MedicoRepository implements Repositorio<Integer, Medico> {
     public boolean remover(Integer id) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+            con = ConexaoBancoDeDados.getConnection();
 
             String sql = "DELETE FROM MEDICO WHERE id_medico = ?";
 
@@ -100,7 +102,7 @@ MedicoRepository implements Repositorio<Integer, Medico> {
     public Medico editar(Integer id, Medico medico) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+            con = ConexaoBancoDeDados.getConnection();
 
             StringBuilder sql = new StringBuilder();
             sql.append("UPDATE MEDICO SET ");
@@ -159,7 +161,7 @@ MedicoRepository implements Repositorio<Integer, Medico> {
         List<Medico> listaMedico = new ArrayList<>();
         Connection con = null;
         try {
-            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+            con = ConexaoBancoDeDados.getConnection();
             Statement stmt = con.createStatement();
 
             String sql = "SELECT * " +
@@ -201,7 +203,7 @@ MedicoRepository implements Repositorio<Integer, Medico> {
         HashMap<String,String> dados = new HashMap<>();
         Connection con = null;
         try {
-            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+            con = ConexaoBancoDeDados.getConnection();
             Statement stmt = con.createStatement();
 
             String sql = "SELECT u.email, u.cpf, u.nome, c.telefone1, e.logradouro, e.numero, e.bairro, e.cidade, e.cep, e.estado, m.crm, es.nome AS especialidade " +

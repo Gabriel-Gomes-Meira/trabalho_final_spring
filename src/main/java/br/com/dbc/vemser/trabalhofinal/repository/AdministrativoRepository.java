@@ -31,7 +31,7 @@ public class AdministrativoRepository implements Repositorio<Integer, Administra
     public Administrativo adicionar(Administrativo administrativo) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+            con = ConexaoBancoDeDados.getConnection();
 
             Integer proximoId = this.getProximoId(con);
             administrativo.setIdAdministrativo(proximoId);
@@ -66,7 +66,7 @@ public class AdministrativoRepository implements Repositorio<Integer, Administra
     public boolean remover(Integer id) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+            con = ConexaoBancoDeDados.getConnection();
 
             String sql = "DELETE FROM ADMINISTRATIVO WHERE id_administrativo = ?";
 
@@ -96,7 +96,7 @@ public class AdministrativoRepository implements Repositorio<Integer, Administra
     public Administrativo editar(Integer id, Administrativo administrativo) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+            con = ConexaoBancoDeDados.getConnection();
 
             StringBuilder sql = new StringBuilder();
             sql.append("UPDATE administrativo SET id_usuario = ? WHERE id_administrativo = ? \n");
@@ -129,7 +129,7 @@ public class AdministrativoRepository implements Repositorio<Integer, Administra
         List<Administrativo> administrativos = new ArrayList<>();
         Connection con = null;
         try {
-            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+            con = ConexaoBancoDeDados.getConnection();
             Statement stmt = con.createStatement();
 
             String sql = "SELECT * " +

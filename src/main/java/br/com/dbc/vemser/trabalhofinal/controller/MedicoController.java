@@ -37,10 +37,10 @@ public class MedicoController {
         return new ResponseEntity<>(medicoService.getMedicoDTO(id), HttpStatus.OK);
     }
 
-    @GetMapping("/{idMedico}/usuario") // GET localhost:8080/medico/{idMedico}/usuario
-    public ResponseEntity<HashMap<String, String>> listBy(@PathVariable("idMedico") Integer id) throws RegraDeNegocioException {
-        return new ResponseEntity<>(medicoService.mostrarInformacoesMedicoUsuario(usuarioService.verificarSeExiste(medicoService.getMedico(id).getIdUsuario())), HttpStatus.OK);
-    }
+//    @GetMapping("/{idMedico}/usuario") // GET localhost:8080/medico/{idMedico}/usuario
+//    public ResponseEntity<HashMap<String, String>> listBy(@PathVariable("idMedico") Integer id) throws RegraDeNegocioException {
+//        return new ResponseEntity<>(medicoService.mostrarInformacoesMedicoUsuario(usuarioService.verificarSeExiste(medicoService.getMedico(id).getIdUsuario())), HttpStatus.OK);
+//    }
 
     @PostMapping // POST localhost:8080/medico
     public ResponseEntity<MedicoDTO> create(@Valid @RequestBody MedicoCreateDTO medico) throws RegraDeNegocioException {

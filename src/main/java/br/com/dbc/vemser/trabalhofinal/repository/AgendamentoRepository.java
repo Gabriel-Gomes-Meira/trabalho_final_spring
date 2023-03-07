@@ -35,7 +35,7 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
     public Agendamento adicionar(Agendamento agendamento) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+            con = ConexaoBancoDeDados.getConnection();
 
             Integer proximoId = this.getProximoId(con);
             agendamento.setIdAgendamento(proximoId);
@@ -101,7 +101,7 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
     public boolean remover(Integer id) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+            con = ConexaoBancoDeDados.getConnection();
 
             String sql = "DELETE FROM AGENDAMENTO WHERE ID_AGENDAMENTO = ?";
 
@@ -131,7 +131,7 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
     public Agendamento editar(Integer id, Agendamento agendamento) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+            con = ConexaoBancoDeDados.getConnection();
 
             StringBuilder sql = new StringBuilder();
             sql.append("UPDATE AGENDAMENTO SET");
@@ -198,7 +198,7 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
         List<Agendamento> agendamentos = new ArrayList<>();
         Connection con = null;
         try {
-            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+            con = ConexaoBancoDeDados.getConnection();
             Statement stmt = con.createStatement();
 
             String sql = "SELECT * " +
@@ -243,7 +243,7 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
         List<HashMap<String,String>> listaMaps = new ArrayList<>();
         Connection con = null;
         try {
-            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+            con = ConexaoBancoDeDados.getConnection();
             Statement stmt = con.createStatement();
 
             String sql = "SELECT a.data_horario, uc.nome AS nome_cliente, um.nome AS nome_medico, a.tratamento, a.exame " +

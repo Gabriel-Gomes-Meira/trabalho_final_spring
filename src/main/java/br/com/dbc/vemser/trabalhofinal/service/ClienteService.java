@@ -65,16 +65,17 @@ public class ClienteService {
 
     public List<ClienteDTO> listar() throws RegraDeNegocioException {
         try {
-            return clienteRepository.listar()
-                    .stream()
-                    .map(cliente -> {
-                        try {
-                            return mostrarInformacoesClienteUsuario(cliente.getIdCliente());
-                        } catch (RegraDeNegocioException e) {
-                            throw new RuntimeException(e);
-                        }
-                    })
-                    .collect(Collectors.toList());
+//            return clienteRepository.listar()
+//                    .stream()
+//                    .map(cliente -> {
+//                        try {
+//                            return mostrarInformacoesClienteUsuario(cliente.getIdCliente());
+//                        } catch (RegraDeNegocioException e) {
+//                            throw new RuntimeException(e);
+//                        }
+//                    })
+//                    .collect(Collectors.toList());
+            return clienteRepository.listarClienteDTOs();
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no Banco!");
         }
@@ -86,7 +87,7 @@ public class ClienteService {
         Usuario usuario = usuarioService.verificarSeExiste(clienteEntity.getIdUsuario());
         UsuarioDTO usuarioDTO = objectMapper.convertValue(usuario, UsuarioDTO.class);
         try {
-            Convenio convenio = convenioService.verificarSeIdConvenioExiste(clienteEntity.getIdConvenio());
+            Convenio convenio = convenioService.verificarSeExiste(clienteEntity.getIdConvenio());
 
             ConvenioDTO convenioDTO = objectMapper.convertValue(convenio, ConvenioDTO.class);
 

@@ -1,5 +1,8 @@
 package br.com.dbc.vemser.trabalhofinal.repository;
 
+import br.com.dbc.vemser.trabalhofinal.dtos.ClienteDTO;
+import br.com.dbc.vemser.trabalhofinal.dtos.ConvenioDTO;
+import br.com.dbc.vemser.trabalhofinal.dtos.UsuarioDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Cliente;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
@@ -36,7 +39,7 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
     public Cliente adicionar(Cliente cliente) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+            con = ConexaoBancoDeDados.getConnection();
 
             Integer proximoId = this.getProximoId(con);
             cliente.setIdCliente(proximoId);
@@ -83,7 +86,7 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
     public boolean remover(Integer id) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+            con = ConexaoBancoDeDados.getConnection();
 
             String sql = "DELETE FROM CLIENTE WHERE ID_CLIENTE = ?";
 
@@ -112,7 +115,7 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
     public Cliente editar(Integer id, Cliente cliente) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+            con = ConexaoBancoDeDados.getConnection();
 
 //            StringBuilder sql = new StringBuilder();
 //            sql.append("UPDATE CLIENTE SET id_convenio = ?, id_convenio = ? WHERE id_cliente = ?");
@@ -164,20 +167,57 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
 
     @Override
     public List<Cliente> listar() throws BancoDeDadosException {
-        List<Cliente> clietes = new ArrayList<>();
+        List<Cliente> clientes = new ArrayList<>();
         Connection con = null;
         try {
-            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+            con = ConexaoBancoDeDados.getConnection();
             Statement stmt = con.createStatement();
 
-            String sql = "SELECT * " +
-                    "       FROM  CLIENTE C ";
+            String sql = "Select * from Cliente ";
+
 
             // Executa-se a consulta
             ResultSet res = stmt.executeQuery(sql);
 
             while (res.next()) {
                 Cliente cliente = getClienteFromResultSet(res);
+                clientes.add(cliente);
+            }
+            return clientes;
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new BancoDeDadosException(e.getCause());
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public List<ClienteDTO> listarClienteDTOs() throws BancoDeDadosException {
+        List<ClienteDTO> clietes = new ArrayList<>();
+        Connection con = null;
+        try {
+            con = ConexaoBancoDeDados.getConnection();
+            Statement stmt = con.createStatement();
+
+            String sql = "SELECT u.email, u.cpf, u.nome, u.contatos, u.endereco, ci.id_cliente, " +
+                    "con.cadastro_orgao_regulador, con.taxa_abatimento " +
+                    "FROM Cliente ci " +
+                    "INNER JOIN USUARIO u ON (u.id_usuario = ci.id_usuario) " +
+                    "LEFT JOIN CONVENIO CON ON (con.id_convenio = ci.id_convenio) ";
+
+
+
+            // Executa-se a consulta
+            ResultSet res = stmt.executeQuery(sql);
+
+            while (res.next()) {
+                ClienteDTO cliente = getClienteDTOFromResultSet(res);
                 clietes.add(cliente);
             }
             return clietes;
@@ -201,6 +241,21 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
         cliente.setIdUsuario(res.getInt("id_usuario"));
         cliente.setIdConvenio(res.getInt("id_convenio"));
         return cliente;
+    }
+
+    private ClienteDTO getClienteDTOFromResultSet(ResultSet res) throws SQLException {
+        ConvenioDTO convenioDTO = new ConvenioDTO();
+        UsuarioDTO usuairoDTO = new UsuarioDTO();
+        usuairoDTO.setEmail(res.getString("email"));
+        usuairoDTO.setCpf(res.getString("cpf"));
+        usuairoDTO.setNome(res.getString("nome"));
+        usuairoDTO.setContatos(res.getString("contatos").split("\n"));
+        usuairoDTO.setEndereco(res.getString("endereco"));
+        if (res.getString("cadastro_orgao_regulador") != null){
+            convenioDTO.setTaxaAbatimento(Double.valueOf(res.getDouble("taxa_abatimento")));
+            convenioDTO.setCadastroOragaoRegulador(res.getString("cadastro_orgao_regulador"));
+        }
+        return new ClienteDTO(res.getInt(("id_cliente")), usuairoDTO, convenioDTO);
     }
 
 }

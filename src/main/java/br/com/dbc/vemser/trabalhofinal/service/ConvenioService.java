@@ -70,9 +70,9 @@ public class ConvenioService {
         }
     }
 
-    public Usuario verificarSeExiste(Integer id) throws RegraDeNegocioException{
+    public Convenio verificarSeExiste(Integer id) throws RegraDeNegocioException{
         try {
-            return usuarioRepository.getUmId(id);
+            return convenioRepository.getUmId(id);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no Banco!");
         }

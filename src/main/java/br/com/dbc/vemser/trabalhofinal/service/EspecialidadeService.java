@@ -8,10 +8,12 @@ import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.repository.EspecialidadeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 
+@Service
 public class EspecialidadeService {
     private final EspecialidadeRepository especialidadeRepository;
     private final ObjectMapper objectMapper;

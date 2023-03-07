@@ -1,4 +1,4 @@
-package com.dbc.repository;
+package br.com.dbc.vemser.trabalhofinal.repository;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
