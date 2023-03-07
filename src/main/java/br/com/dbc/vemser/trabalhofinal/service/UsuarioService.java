@@ -53,7 +53,7 @@ public class UsuarioService {
 
     public List<UsuarioDTO> listar() throws RegraDeNegocioException {
         try {
-            return usuarioRepository.listar().stream().map(usuario -> { return objectMapper.convertValue(usuario, UsuarioDTO.class);}).toList();
+            return usuarioRepository.listar().stream().map(usuario -> objectMapper.convertValue(usuario, UsuarioDTO.class)).toList();
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no banco!");
         }
@@ -69,14 +69,14 @@ public class UsuarioService {
 
             // Estou iterando com 'fori comum' pois não consigo levantar exceções dentro do forEach. Apesar de poder tratálos...
             List<Usuario> usuarios = usuarioRepository.listar();
-            for (int i = 0; i < usuarios.size(); i++) {
+            for (Usuario value : usuarios) {
                 //Quando estivermos atualizando, devemos verifiar se email e cpf já existem em outro usuário ALÉM do que está sendo atualizado.
-                if(usuarios.get(i).getCpf().equals(usuario.getCpf()) && (usuario.getIdUsuario()!=null &&
-                                                                    !Objects.equals(usuarios.get(i).getIdUsuario(), usuario.getIdUsuario()))){
+                if (value.getCpf().equals(usuario.getCpf()) && (usuario.getIdUsuario() != null &&
+                        !Objects.equals(value.getIdUsuario(), usuario.getIdUsuario()))) {
                     throw new RegraDeNegocioException("Já existe usuário com esse CPF!");
                 }
-                if (usuarios.get(i).getEmail().equals(usuario.getEmail()) && (usuario.getIdUsuario()!=null &&
-                                                                    !Objects.equals(usuarios.get(i).getIdUsuario(), usuario.getIdUsuario()))) {
+                if (value.getEmail().equals(usuario.getEmail()) && (usuario.getIdUsuario() != null &&
+                        !Objects.equals(value.getIdUsuario(), usuario.getIdUsuario()))) {
                     throw new RegraDeNegocioException("Já existe usuário com esse e-mail!");
                 }
             }
@@ -129,11 +129,7 @@ public class UsuarioService {
         try {
             List<Usuario> tempList = usuarioRepository.listar().stream().filter(usuario -> usuario.getEmail().equals(email)
                     && usuario.getSenha().equals(password)).toList();
-            if(tempList.size() > 0){
-                return true;
-            }else{
-                return false;
-            }
+            return tempList.size() > 0;
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no banco!");
         }
