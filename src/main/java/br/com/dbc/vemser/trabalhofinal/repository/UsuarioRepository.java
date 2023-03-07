@@ -61,8 +61,7 @@ public class UsuarioRepository implements Repositorio<Integer, Usuario> {
             stmt.setString(7, usuario.getEndereco());
             stmt.setString(8, String.join("\n",usuario.getContatos()));
 
-            int res = stmt.executeUpdate();
-            System.out.println("adicionarUsuario.res=" + res);
+            stmt.executeUpdate();
             return usuario;
         } catch (SQLException e) {
             log.error(e.getMessage());
@@ -92,7 +91,6 @@ public class UsuarioRepository implements Repositorio<Integer, Usuario> {
 
             // Executa-se a consulta
             int res = stmt.executeUpdate();
-            System.out.println("removerUsuarioPorId.res=" + res);
 
             return res > 0;
         } catch (SQLException e) {

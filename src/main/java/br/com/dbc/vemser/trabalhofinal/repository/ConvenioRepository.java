@@ -2,11 +2,15 @@ package br.com.dbc.vemser.trabalhofinal.repository;
 
 import br.com.dbc.vemser.trabalhofinal.entity.Convenio;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
+@Slf4j
 public class ConvenioRepository implements Repositorio<Integer, Convenio> {
 
 
@@ -23,6 +27,7 @@ public class ConvenioRepository implements Repositorio<Integer, Convenio> {
 
             return null;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         }
     }
@@ -46,8 +51,8 @@ public class ConvenioRepository implements Repositorio<Integer, Convenio> {
             stmt.setString(2, convenio.getCadastroOragaoRegulador());
             stmt.setDouble(3, convenio.getTaxaAbatimento());
 
-            int res = stmt.executeUpdate();
-            System.out.println("adicionarUsuario.res=" + res);
+            stmt.executeUpdate();
+
             return convenio;
         } catch (SQLException e) {
             throw new BancoDeDadosException(e.getCause());
@@ -57,6 +62,7 @@ public class ConvenioRepository implements Repositorio<Integer, Convenio> {
                     con.close();
                 }
             } catch (SQLException e) {
+                log.error(e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -76,10 +82,37 @@ public class ConvenioRepository implements Repositorio<Integer, Convenio> {
 
             // Executa-se a consulta
             int res = stmt.executeUpdate();
-            System.out.println("removerConvenioPorId.res=" + res);
-
             return res > 0;
         } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new BancoDeDadosException(e.getCause());
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void remover2(Integer id) throws BancoDeDadosException {
+        Connection con = null;
+        try {
+            con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
+
+            String sql = "DELETE FROM CONVENIO WHERE ID_CONVENIO = ?";
+
+            PreparedStatement stmt = con.prepareStatement(sql);
+
+            stmt.setInt(1, id);
+
+            // Executa-se a consulta
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {
@@ -98,35 +131,43 @@ public class ConvenioRepository implements Repositorio<Integer, Convenio> {
         try {
             con = com.dbc.repository.ConexaoBancoDeDados.getConnection();
 
-            StringBuilder sql = new StringBuilder();
-            sql.append("UPDATE CONVENIO SET ");
+            String sql = "UPDATE CONVENIO SET cadastro_orgao_regulador = ?, taxa_abatimento = ? where id_convenio = ?";
+            PreparedStatement stmt = con.prepareStatement(sql);
 
-            if (convenio.getTaxaAbatimento() != null) {
-                sql.append(" taxa_abatimento = ?,");
-            }
-            if (convenio.getCadastroOragaoRegulador()!= null) {
-                sql.append(" cadastro_orgao_regulador = ?,");
-            }
-
-            sql.deleteCharAt(sql.length() - 1); //remove o ultimo ','
-            sql.append(" where id_convenio = ?");
-            PreparedStatement stmt = con.prepareStatement(sql.toString());
+//            StringBuilder sql = new StringBuilder();
+//            sql.append("UPDATE CONVENIO SET ");
+//
+//            if (convenio.getTaxaAbatimento() != null) {
+//                sql.append(" taxa_abatimento = ?,");
+//            }
+//            if (convenio.getCadastroOragaoRegulador()!= null) {
+//                sql.append(" cadastro_orgao_regulador = ?,");
+//            }
+//
+//            sql.deleteCharAt(sql.length() - 1); //remove o ultimo ','
+//            sql.append(" where id_convenio = ?");
+//            PreparedStatement stmt = con.prepareStatement(sql.toString());
 
             int index = 1;
-
-            if (convenio.getCadastroOragaoRegulador() != null) {
-                stmt.setString(index++, convenio.getCadastroOragaoRegulador());
-            }
-            if (convenio.getTaxaAbatimento() != null) {
-                stmt.setDouble(index++, convenio.getTaxaAbatimento());
-            }
-
+            stmt.setString(index++, convenio.getCadastroOragaoRegulador());
+            stmt.setDouble(index++, convenio.getTaxaAbatimento());
             stmt.setInt(index, id);
 
-            int res = stmt.executeUpdate();
-            System.out.println("editarConvenio.res=" + res);
+//            if (convenio.getCadastroOragaoRegulador() != null) {
+//                stmt.setString(index++, convenio.getCadastroOragaoRegulador());
+//            }
+//            if (convenio.getTaxaAbatimento() != null) {
+//                stmt.setDouble(index++, convenio.getTaxaAbatimento());
+//            }
+
+//            int res = stmt.executeUpdate();
+            convenio.setIdConvenio(id);
+
+            stmt.executeUpdate();
+
             return convenio;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {
@@ -148,7 +189,7 @@ public class ConvenioRepository implements Repositorio<Integer, Convenio> {
             Statement stmt = con.createStatement();
 
             String sql = "SELECT * " +
-                    "       FROM CONVENIO " ;
+                    "       FROM CONVENIO ";
 
             // Executa-se a consulta
             ResultSet res = stmt.executeQuery(sql);
@@ -159,6 +200,7 @@ public class ConvenioRepository implements Repositorio<Integer, Convenio> {
             }
             return convenios;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {

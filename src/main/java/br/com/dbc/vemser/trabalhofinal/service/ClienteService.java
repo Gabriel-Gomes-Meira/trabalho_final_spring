@@ -1,68 +1,105 @@
 package br.com.dbc.vemser.trabalhofinal.service;
 
+import br.com.dbc.vemser.trabalhofinal.dtos.ClienteCreateDTO;
+import br.com.dbc.vemser.trabalhofinal.dtos.ClienteDTO;
+import br.com.dbc.vemser.trabalhofinal.dtos.ConvenioDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Cliente;
+import br.com.dbc.vemser.trabalhofinal.entity.Convenio;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
+import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.repository.ClienteRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
+@Service
+@Slf4j
 public class ClienteService {
     private ClienteRepository clienteRepository;
+    private ObjectMapper objectMapper;
 
-    public ClienteService() {
-        clienteRepository = new ClienteRepository();
-    }
-    public void adicionar(Cliente cliente) {
-        try {
-            Cliente clienteAdicionado = clienteRepository.adicionar(cliente);
-            System.out.println("Cliente adicinado com sucesso! " + clienteAdicionado);
-
-        } catch (BancoDeDadosException e) {
-            e.printStackTrace();
-        }
-    }
-    public void remover(Integer id) {
-        try {
-            boolean conseguiuRemover = clienteRepository.remover(id);
-            System.out.println("removido? " + conseguiuRemover + "| com id=" + id);
-        } catch (BancoDeDadosException e) {
-            e.printStackTrace();
-        }
-    }
-    public void editar(Integer id, Cliente cliente) {
-        try {
-//            boolean conseguiuEditar =
-            clienteRepository.editar(id, cliente);
-//            System.out.println("editado? " + conseguiuEditar + "| com id=" + id);
-
-        } catch (BancoDeDadosException e) {
-            e.printStackTrace();
-        }
-    }
-    public List<Usuario> listar() {
-        try {
-            clienteRepository.listar().forEach(System.out::println);
-        } catch (BancoDeDadosException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public ClienteService(ClienteRepository clienteRepository, ObjectMapper objectMapper) {
+        this.clienteRepository = clienteRepository;
+        this.objectMapper = objectMapper;
     }
 
-    public void mostrarInformacoesClienteUsuario(Usuario usuarioAtivo){
+    public ClienteDTO adicionar(ClienteCreateDTO cliente) throws RegraDeNegocioException {
         try {
-            HashMap<String,String> informacoes = clienteRepository.mostrarInformacoesClienteUsuario(usuarioAtivo);
-            for (Map.Entry<String, String> set : informacoes.entrySet()) {
-                System.out.println(set.getKey() + " "
-                        + set.getValue());
-            }
+            Cliente clienteEntity = objectMapper.convertValue(cliente, Cliente.class);
+            clienteRepository.adicionar(clienteEntity);
+            return objectMapper.convertValue(clienteEntity, ClienteDTO.class);
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            log.error("Erro aqui");
+            throw new RegraDeNegocioException("Erro no Banco!");
         }
     }
+
+    public void remover(Integer id) throws RegraDeNegocioException {
+        try {
+            verificarSeIdClienteExiste(id);
+            clienteRepository.remover(id);
+        } catch (BancoDeDadosException e) {
+            throw new RegraDeNegocioException("Erro no Banco!");
+        }
+    }
+
+    public ClienteDTO editar(Integer id, ClienteCreateDTO cliente) throws RegraDeNegocioException {
+        try {
+            Cliente clienteEntity = objectMapper.convertValue(cliente, Cliente.class);
+            verificarSeIdClienteExiste(id);
+            clienteRepository.editar(id, clienteEntity);
+            return objectMapper.convertValue(clienteEntity, ClienteDTO.class);
+        } catch (BancoDeDadosException e) {
+            throw new RegraDeNegocioException("Erro no Banco!");
+        }
+    }
+
+    public List<ClienteDTO> listar() throws RegraDeNegocioException {
+        try {
+            return clienteRepository.listar()
+                    .stream()
+                    .map(cliente -> objectMapper.convertValue(cliente, ClienteDTO.class))
+                    .collect(Collectors.toList());
+        } catch (BancoDeDadosException e) {
+            throw new RegraDeNegocioException("Erro no Banco!");
+        }
+    }
+
+//    public void mostrarInformacoesClienteUsuario(Integer idCliente) throws RegraDeNegocioException, BancoDeDadosException {
+//
+//        Cliente clienteEntity = verificarSeIdClienteExiste(idCliente);
+//
+//        try {
+//            clienteRepository.mostrarInformacoesClienteUsuario(idCliente);
+//            HashMap<String, String> informacoes = clienteRepository.mostrarInformacoesClienteUsuario(usuarioAtivo);
+//            for (Map.Entry<String, String> set : informacoes.entrySet()) {
+//                System.out.println(set.getKey() + " "
+//                        + set.getValue());
+//            }
+//        } catch (BancoDeDadosException e) {
+//            throw new RegraDeNegocioException("Erro no banco!");
+//        }
+//    }
+
+    private Cliente verificarSeIdClienteExiste(Integer id) throws RegraDeNegocioException {
+        try {
+           return clienteRepository.listar()
+                    .stream()
+                    .filter(cliente -> cliente.getIdCliente().equals(id))
+                    .findFirst()
+                    .orElseThrow(() -> new RegraDeNegocioException("Cliente não encontrado!"));
+        } catch (BancoDeDadosException e) {
+            throw new RegraDeNegocioException("Erro no Banco!");
+        }
+    }
+
 
 }

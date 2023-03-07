@@ -1,58 +1,80 @@
 package br.com.dbc.vemser.trabalhofinal.service;
 
+import br.com.dbc.vemser.trabalhofinal.dtos.ConvenioCreateDTO;
+import br.com.dbc.vemser.trabalhofinal.dtos.ConvenioDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Convenio;
-import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
+import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.repository.ConvenioRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
+@Service
 public class ConvenioService {
     private ConvenioRepository convenioRepository;
+    private final ObjectMapper objectMapper;
 
-    public ConvenioService() {
+    public ConvenioService(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
         convenioRepository = new ConvenioRepository();
     }
 
-    public void adicionar(Convenio convenio) {
+    public ConvenioDTO adicionar(ConvenioCreateDTO convenio) throws RegraDeNegocioException {
         try {
-            Convenio enderecoAdicionado = convenioRepository.adicionar(convenio);
-            System.out.println("Convênio adicinado com sucesso! " + enderecoAdicionado);
-
+            Convenio convenioEntity = objectMapper.convertValue(convenio, Convenio.class);
+            convenioRepository.adicionar(convenioEntity);
+            return objectMapper.convertValue(convenioEntity, ConvenioDTO.class);
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Erro no Banco!");
         }
     }
 
-    public void remover(Integer id) {
+    public void remover(Integer id) throws RegraDeNegocioException {
         try {
-            boolean conseguiuRemover = convenioRepository.remover(id);
-            System.out.println("removido? " + conseguiuRemover + "| com id=" + id);
+            verificarSeIdConvenioExiste(id);
+            convenioRepository.remover2(id);
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Erro no Banco!");
         }
     }
 
-    public void editar(Integer id, Convenio convenio) {
-        try {
-//            boolean conseguiuEditar =
-            convenioRepository.editar(id, convenio);
-//            System.out.println("editado? " + conseguiuEditar + "| com id=" + id);
 
+    public ConvenioDTO editar(Integer id, ConvenioCreateDTO convenio) throws RegraDeNegocioException {
+        try {
+            Convenio convenioEntity = objectMapper.convertValue(convenio, Convenio.class);
+            verificarSeIdConvenioExiste(id);
+            convenioRepository.editar(id, convenioEntity);
+            return objectMapper.convertValue(convenioEntity, ConvenioDTO.class);
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Erro no Banco!");
+        }
+
+    }
+
+    public List<ConvenioDTO> listar() throws RegraDeNegocioException {
+        try {
+            return convenioRepository.listar()
+                    .stream()
+                    .map(convenio -> objectMapper.convertValue(convenio, ConvenioDTO.class))
+                    .collect(Collectors.toList());
+        } catch (BancoDeDadosException e) {
+            throw new RegraDeNegocioException("Erro no banco!");
         }
     }
 
-    public List<Usuario> listar() {
+    private void verificarSeIdConvenioExiste(Integer id) throws RegraDeNegocioException {
         try {
-            convenioRepository.listar().forEach(System.out::println);
+            convenioRepository.listar().stream()
+                    .filter(convenio -> convenio.getIdConvenio().equals(id))
+                    .findFirst()
+                    .orElseThrow(() -> new RegraDeNegocioException("Convenio não encontrado!"));
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Erro no Banco!");
         }
-        return null;
     }
-
 
 }
