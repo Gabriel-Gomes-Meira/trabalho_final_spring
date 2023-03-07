@@ -1,73 +1,98 @@
 package br.com.dbc.vemser.trabalhofinal.service;
 
+import br.com.dbc.vemser.trabalhofinal.dtos.MedicoCreateDTO;
+import br.com.dbc.vemser.trabalhofinal.dtos.MedicoDTO;
+import br.com.dbc.vemser.trabalhofinal.dtos.UsuarioDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Medico;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
 
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
+import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.repository.MedicoRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MedicoService{
-    private MedicoRepository medicoRepository;
+    private final MedicoRepository medicoRepository;
+    private final ObjectMapper objectMapper;
 
-    public MedicoService() {
-        medicoRepository = new MedicoRepository();
+    public MedicoService(MedicoRepository medicoRepository, ObjectMapper objectMapper) {
+        this.medicoRepository = medicoRepository;
+        this.objectMapper = objectMapper;
     }
 
-    public void adicionar(Medico medico) {
+    public MedicoDTO adicionar(MedicoCreateDTO medico) throws RegraDeNegocioException {
         try {
-            Medico medicoAdicionado = medicoRepository.adicionar(medico);
-            System.out.println("Cliente adicinado com sucesso! " + medicoAdicionado);
-
+            Medico medicioAdicionar = objectMapper.convertValue(medico, Medico.class);
+            Medico medicoAdicionado = medicoRepository.adicionar(medicioAdicionar);
+            return objectMapper.convertValue(medicoAdicionado, MedicoDTO.class);
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Médico não adicionado por problema no banco de dados.");
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Médico não adicionado.");
         }
     }
 
-    public void remover(Integer id) {
+    public void remover(Integer id) throws RegraDeNegocioException {
         try {
-            boolean conseguiuRemover = medicoRepository.remover(id);
-            System.out.println("removido? " + conseguiuRemover + "| com id=" + id);
+            getMedico(id);
+            medicoRepository.remover(id);
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Médico não removido por problema no banco de dados.");
+        } catch (Exception e) {
+            throw new RegraDeNegocioException("Médico não removido.");
         }
     }
 
-    public void editar(Integer id, Medico medico) {
+    public MedicoDTO editar(Integer id, MedicoCreateDTO medico) throws RegraDeNegocioException {
         try {
-//            boolean conseguiuEditar =
-            medicoRepository.editar(id, medico);
-//            System.out.println("editado? " + conseguiuEditar + "| com id=" + id);
-
+            getMedico(id);
+            Medico medicoEditar = objectMapper.convertValue(medico, Medico.class);
+            Medico medicoEditado = medicoRepository.editar(id, medicoEditar);
+            return objectMapper.convertValue(medicoEditado, MedicoDTO.class);
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Médico não editado por problema no banco de dados.");
+        } catch (Exception e) {
+            throw new RegraDeNegocioException("Médico não editado.");
         }
     }
 
-    public List<Usuario> listar() {
+    public List<MedicoDTO> listar() throws RegraDeNegocioException {
         try {
-            medicoRepository.listar().forEach(System.out::println);
+            return medicoRepository.listar().stream().map(medico -> objectMapper.convertValue(medico, MedicoDTO.class)).toList();
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Médicos não listados por problema no banco de dados.");
+        } catch (Exception e) {
+            throw new RegraDeNegocioException("Médicos não listados.");
         }
-        return null;
     }
 
-    public void mostrarInformacoesMedicoUsuario(Usuario usuarioAtivo){
+    public HashMap<String,String> mostrarInformacoesMedicoUsuario(UsuarioDTO usuarioAtivo) throws RegraDeNegocioException {
         try {
-            HashMap<String,String> informacoes = medicoRepository.mostrarInformacoesMedicoUsuario(usuarioAtivo);
-            for (Map.Entry<String, String> set : informacoes.entrySet()) {
-                System.out.println(set.getKey() + " "
-                        + set.getValue());
-            }
+            return medicoRepository.mostrarInformacoesMedicoUsuario(objectMapper.convertValue(usuarioAtivo, Usuario.class));
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Informações do médico não mostradas por problema no banco de dados.");
+        } catch (Exception e) {
+            throw new RegraDeNegocioException("Informações do médico não mostradas");
         }
+    }
+
+    public Medico getMedico(Integer id) throws RegraDeNegocioException {
+        try{
+            return medicoRepository.listar()
+                    .stream()
+                    .filter(medico -> medico.getIdMedico().equals(id))
+                    .findFirst()
+                    .orElseThrow(() -> new RegraDeNegocioException("Médico não encontrado!"));
+        }catch(BancoDeDadosException e){
+            throw new RegraDeNegocioException("Médico não encontrado por problema no banco de dados.");
+        }
+    }
+
+    public MedicoDTO getMedicoDTO(Integer id) throws RegraDeNegocioException {
+        return objectMapper.convertValue(getMedico(id), MedicoDTO.class);
     }
 
 }

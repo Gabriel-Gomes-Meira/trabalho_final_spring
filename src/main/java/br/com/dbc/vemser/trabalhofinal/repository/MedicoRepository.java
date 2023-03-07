@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MedicoRepository implements Repositorio<Integer, Medico> {
+public class
+MedicoRepository implements Repositorio<Integer, Medico> {
     @Override
     public Integer getProximoId(Connection connection) throws BancoDeDadosException {
         try {
