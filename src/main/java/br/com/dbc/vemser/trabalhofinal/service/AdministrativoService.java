@@ -4,7 +4,6 @@ import br.com.dbc.vemser.trabalhofinal.entity.Administrativo;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import br.com.dbc.vemser.trabalhofinal.repository.AdministrativoRepository;
-import com.dbc.exceptions.ValorDeEntradaException;
 
 import java.util.List;
 
@@ -43,7 +42,7 @@ public class AdministrativoService {
             administrativoRepository.editar(id, administrativo);
 //            System.out.println("editado? " + conseguiuEditar + "| com id=" + id);
 
-        } catch (BancoDeDadosException | ValorDeEntradaException e) {
+        } catch (BancoDeDadosException e) {
             e.printStackTrace();
         }
     }
