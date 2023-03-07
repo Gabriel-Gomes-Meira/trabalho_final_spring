@@ -1,64 +1,87 @@
 package br.com.dbc.vemser.trabalhofinal.service;
 
+import br.com.dbc.vemser.trabalhofinal.dtos.EspecialidadeCreateDTO;
+import br.com.dbc.vemser.trabalhofinal.dtos.EspecialidadeDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Especialidade;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
+import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.repository.EspecialidadeRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
 
 public class EspecialidadeService {
-    private EspecialidadeRepository especialidadeRepository;
+    private final EspecialidadeRepository especialidadeRepository;
+    private final ObjectMapper objectMapper;
 
-    public EspecialidadeService() {
-        especialidadeRepository = new EspecialidadeRepository();
+    public EspecialidadeService(EspecialidadeRepository especialidadeRepository, ObjectMapper objectMapper) {
+        this.especialidadeRepository = especialidadeRepository;
+        this.objectMapper = objectMapper;
     }
 
     // criação de um objeto
-    public void adicionar(Especialidade especialidade) {
+    public EspecialidadeDTO adicionar(EspecialidadeCreateDTO especialidade) throws RegraDeNegocioException {
         try {
-            Especialidade especialidadeAdicionado = especialidadeRepository.adicionar(especialidade);
-            System.out.println("contato adicinado com sucesso! " + especialidadeAdicionado);
-
+            Especialidade novaEspecialidade = objectMapper.convertValue(especialidade, Especialidade.class);
+            Especialidade especialidadeAdicionada = especialidadeRepository.adicionar(novaEspecialidade);
+            return objectMapper.convertValue(especialidadeAdicionada, EspecialidadeDTO.class);
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Especialidade não adicionada por problema no banco de dados.");
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Especialidade não adicionada.");
         }
     }
 
     // remoção
-    public void remover(Integer id) {
+    public void remover(Integer id) throws RegraDeNegocioException {
         try {
-            boolean conseguiuRemover = especialidadeRepository.remover(id);
-            System.out.println("removido? " + conseguiuRemover + "| com id=" + id);
+            getEspecialidade(id);
+            especialidadeRepository.remover(id);
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Especialidade não adicionada por problema no banco de dados.");
         }
     }
 
 
     // atualização de um objeto
-    public void editar(Integer id, Especialidade especialidade) {
+    public EspecialidadeDTO editar(Integer id, EspecialidadeCreateDTO especialidade) throws RegraDeNegocioException {
         try {
-//            boolean conseguiuEditar =
-            especialidadeRepository.editar(id, especialidade);
-//            System.out.println("editado? " + conseguiuEditar + "| com id=" + id);
-
+            getEspecialidade(id);
+            Especialidade especialidadeEditar = objectMapper.convertValue(especialidade, Especialidade.class);
+            return objectMapper.convertValue(especialidadeRepository.editar(id, especialidadeEditar), EspecialidadeDTO.class);
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Especialidade não editada por problema no banco de dados.");
+        } catch (RegraDeNegocioException e) {
+            throw new RegraDeNegocioException("Especialidade não editada.");
         }
     }
 
     // leitura
-    public List<Usuario> listar() {
+    public List<EspecialidadeDTO> listar() throws RegraDeNegocioException {
         try {
-            especialidadeRepository.listar().forEach(System.out::println);
+            return especialidadeRepository.listar().stream().map(especialidade -> objectMapper.convertValue(especialidade, EspecialidadeDTO.class)).toList();
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Especialidade não adicionada por problema no banco de dados.");
         }
-        return null;
     }
+
+    public EspecialidadeDTO getEspecialidadeDTO(Integer id) throws RegraDeNegocioException {
+        return objectMapper.convertValue(getEspecialidade(id), EspecialidadeDTO.class);
+    }
+
+    public Especialidade getEspecialidade(Integer id) throws RegraDeNegocioException {
+        try{
+            return especialidadeRepository.listar()
+                    .stream()
+                    .filter(especialidade -> especialidade.getIdEspecialidade().equals(id))
+                    .findFirst()
+                    .orElseThrow(() -> new RegraDeNegocioException("Especialidade não encontrada!"));
+        }catch(BancoDeDadosException e){
+            throw new RegraDeNegocioException("Especialidade não encontrado por problema no banco de dados.");
+        }
+    }
+
 
 }

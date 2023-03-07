@@ -1,4 +1,4 @@
-package br.com.dbc.vemser.trabalhofinal.entity;
+package br.com.dbc.vemser.trabalhofinal.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,9 +10,10 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class Especialidade {
-    private Integer idEspecialidade;
-    private double valor;
-    private String nome;
+public class EspecialidadeCreateDTO {
 
+    @NotNull
+    private double valor;
+    @NotBlank
+    private String nome;
 }
