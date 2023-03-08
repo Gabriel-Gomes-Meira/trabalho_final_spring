@@ -1,4 +1,4 @@
-package br.com.dbc.vemser.trabalhofinal.dtos;
+package br.com.dbc.vemser.trabalhofinal.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClienteDTO {
-    private Integer idCliente;
+public class MedicoDTO extends MedicoCreateDTO{
+    private Integer idMedico;
     private UsuarioDTO usuarioDTO;
-    private ConvenioDTO convenioDTO;
+    private EspecialidadeDTO especialidadeDTO;
 }

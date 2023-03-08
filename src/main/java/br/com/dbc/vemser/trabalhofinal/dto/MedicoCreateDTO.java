@@ -1,4 +1,5 @@
-package br.com.dbc.vemser.trabalhofinal.dtos;
+package br.com.dbc.vemser.trabalhofinal.dto;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,10 +11,15 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class EspecialidadeCreateDTO {
 
-    @NotNull
-    private double valor;
+public class MedicoCreateDTO {
+
     @NotBlank
-    private String nome;
+    private String crm;
+    @NotNull
+    private Integer idEspecialidade;
+    @NotNull
+    private Integer idUsuario;
+
+
 }

@@ -1,7 +1,7 @@
 package br.com.dbc.vemser.trabalhofinal.service;
 
-import br.com.dbc.vemser.trabalhofinal.dtos.EspecialidadeCreateDTO;
-import br.com.dbc.vemser.trabalhofinal.dtos.EspecialidadeDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.EspecialidadeCreateDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.EspecialidadeDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Especialidade;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;

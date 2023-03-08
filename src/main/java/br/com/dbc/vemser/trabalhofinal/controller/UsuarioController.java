@@ -1,7 +1,7 @@
 package br.com.dbc.vemser.trabalhofinal.controller;
 
-import br.com.dbc.vemser.trabalhofinal.dtos.UsuarioCreateDTO;
-import br.com.dbc.vemser.trabalhofinal.dtos.UsuarioDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.UsuarioCreateDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.UsuarioDTO;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.service.UsuarioService;
 import org.springframework.http.HttpStatus;

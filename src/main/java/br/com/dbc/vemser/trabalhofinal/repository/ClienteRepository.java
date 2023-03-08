@@ -1,8 +1,8 @@
 package br.com.dbc.vemser.trabalhofinal.repository;
 
-import br.com.dbc.vemser.trabalhofinal.dtos.ClienteDTO;
-import br.com.dbc.vemser.trabalhofinal.dtos.ConvenioDTO;
-import br.com.dbc.vemser.trabalhofinal.dtos.UsuarioDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.ClienteDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.ConvenioDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.UsuarioDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Cliente;
 import br.com.dbc.vemser.trabalhofinal.entity.TipoUsuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;

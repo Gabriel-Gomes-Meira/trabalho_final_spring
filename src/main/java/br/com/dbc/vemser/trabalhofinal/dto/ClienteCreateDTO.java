@@ -1,4 +1,4 @@
-package br.com.dbc.vemser.trabalhofinal.dtos;
+package br.com.dbc.vemser.trabalhofinal.dto;
 
 import lombok.Data;
 

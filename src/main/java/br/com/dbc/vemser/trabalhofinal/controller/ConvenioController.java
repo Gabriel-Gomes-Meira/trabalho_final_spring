@@ -1,8 +1,8 @@
 package br.com.dbc.vemser.trabalhofinal.controller;
 
 
-import br.com.dbc.vemser.trabalhofinal.dtos.ConvenioCreateDTO;
-import br.com.dbc.vemser.trabalhofinal.dtos.ConvenioDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.ConvenioCreateDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.ConvenioDTO;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.service.ConvenioService;
 import lombok.RequiredArgsConstructor;

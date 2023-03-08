@@ -1,7 +1,7 @@
 package br.com.dbc.vemser.trabalhofinal.service;
 
-import br.com.dbc.vemser.trabalhofinal.dtos.UsuarioCreateDTO;
-import br.com.dbc.vemser.trabalhofinal.dtos.UsuarioDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.UsuarioCreateDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.UsuarioDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;

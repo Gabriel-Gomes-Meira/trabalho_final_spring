@@ -1,7 +1,7 @@
 package br.com.dbc.vemser.trabalhofinal.service;
 
-import br.com.dbc.vemser.trabalhofinal.dtos.MedicoCreateDTO;
-import br.com.dbc.vemser.trabalhofinal.dtos.MedicoDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.MedicoCreateDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.MedicoDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Medico;
 
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;

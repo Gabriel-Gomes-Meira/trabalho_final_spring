@@ -1,10 +1,9 @@
 package br.com.dbc.vemser.trabalhofinal.controller;
 
-import br.com.dbc.vemser.trabalhofinal.dtos.MedicoCreateDTO;
-import br.com.dbc.vemser.trabalhofinal.dtos.MedicoDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.MedicoCreateDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.MedicoDTO;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.service.MedicoService;
-import br.com.dbc.vemser.trabalhofinal.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
