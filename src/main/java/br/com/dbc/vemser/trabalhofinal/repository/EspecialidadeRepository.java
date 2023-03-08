@@ -127,7 +127,6 @@ public class EspecialidadeRepository implements Repositorio<Integer, Especialida
 
             // Executa-se a consulta
             int res = stmt.executeUpdate();
-            System.out.println("editarContato.res=" + res);
 
             return especialidade;
         } catch (SQLException e) {
