@@ -18,4 +18,14 @@ public enum TipoUsuario {
         return valor;
     }
 
+    public static TipoUsuario recuperarPeloCodigo(int n) {
+        for (TipoUsuario tipoUsuario : TipoUsuario.values()) {
+            if (tipoUsuario.getValor() == n) {
+                return tipoUsuario;
+            }
+        }
+
+        return null;
+    }
+
 }

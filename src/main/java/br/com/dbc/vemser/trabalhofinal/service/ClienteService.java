@@ -82,19 +82,31 @@ public class ClienteService {
     }
 
     public ClienteDTO mostrarInformacoesClienteUsuario(Integer idCliente) throws RegraDeNegocioException {
-        Cliente clienteEntity = verificarSeIdClienteExiste(idCliente);
-
-        Usuario usuario = usuarioService.verificarSeExiste(clienteEntity.getIdUsuario());
-        UsuarioDTO usuarioDTO = objectMapper.convertValue(usuario, UsuarioDTO.class);
         try {
-            Convenio convenio = convenioService.verificarSeExiste(clienteEntity.getIdConvenio());
-
-            ConvenioDTO convenioDTO = objectMapper.convertValue(convenio, ConvenioDTO.class);
-
-            return new ClienteDTO(clienteEntity.getIdCliente(), usuarioDTO, convenioDTO);
-        } catch (RegraDeNegocioException e) {
-            return new ClienteDTO(clienteEntity.getIdCliente(), usuarioDTO, null);
+            ClienteDTO clienteDTO = clienteRepository.listarClienteDTOId(idCliente);
+            if (clienteDTO != null) {
+                return clienteDTO;
+            } else {
+                throw new RegraDeNegocioException("Cliente não existe!");
+            }
+        } catch (BancoDeDadosException e) {
+            throw new RuntimeException(e);
         }
+
+
+//        Cliente clienteEntity = verificarSeIdClienteExiste(idCliente);
+//
+//        Usuario usuario = usuarioService.verificarSeExiste(clienteEntity.getIdUsuario());
+//        UsuarioDTO usuarioDTO = objectMapper.convertValue(usuario, UsuarioDTO.class);
+//        try {
+//            Convenio convenio = convenioService.verificarSeExiste(clienteEntity.getIdConvenio());
+//
+//            ConvenioDTO convenioDTO = objectMapper.convertValue(convenio, ConvenioDTO.class);
+//
+//            return new ClienteDTO(clienteEntity.getIdCliente(), usuarioDTO, convenioDTO);
+//        } catch (RegraDeNegocioException e) {
+//            return new ClienteDTO(clienteEntity.getIdCliente(), usuarioDTO, null);
+//        }
     }
 
     private Cliente verificarSeIdClienteExiste(Integer id) throws RegraDeNegocioException {

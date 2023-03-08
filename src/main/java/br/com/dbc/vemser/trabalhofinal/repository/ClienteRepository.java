@@ -4,6 +4,7 @@ import br.com.dbc.vemser.trabalhofinal.dtos.ClienteDTO;
 import br.com.dbc.vemser.trabalhofinal.dtos.ConvenioDTO;
 import br.com.dbc.vemser.trabalhofinal.dtos.UsuarioDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Cliente;
+import br.com.dbc.vemser.trabalhofinal.entity.TipoUsuario;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import lombok.extern.slf4j.Slf4j;
@@ -205,12 +206,11 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
             con = ConexaoBancoDeDados.getConnection();
             Statement stmt = con.createStatement();
 
-            String sql = "SELECT u.email, u.cpf, u.nome, u.contatos, u.endereco, ci.id_cliente, " +
-                    "con.cadastro_orgao_regulador, con.taxa_abatimento " +
+            String sql = "SELECT u.id_usuario, u.tipo, u.email, u.email, u.cpf, u.nome, u.contatos, u.endereco, ci.id_cliente, " +
+                    "con.cadastro_orgao_regulador, con.taxa_abatimento, con.id_convenio " +
                     "FROM Cliente ci " +
                     "INNER JOIN USUARIO u ON (u.id_usuario = ci.id_usuario) " +
                     "LEFT JOIN CONVENIO CON ON (con.id_convenio = ci.id_convenio) ";
-
 
 
             // Executa-se a consulta
@@ -235,6 +235,45 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
         }
     }
 
+    public ClienteDTO listarClienteDTOId(Integer id) throws BancoDeDadosException {
+        Connection con = null;
+        try {
+            ClienteDTO cliente = null;
+            con = ConexaoBancoDeDados.getConnection();
+
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT u.id_usuario, u.tipo,u.email, u.cpf, u.nome, u.contatos, u.endereco, ci.id_cliente, " +
+                    "con.cadastro_orgao_regulador, con.taxa_abatimento, con.id_convenio " +
+                    "FROM Cliente ci " +
+                    "INNER JOIN USUARIO u ON (u.id_usuario = ci.id_usuario) " +
+                    "LEFT JOIN CONVENIO CON ON (con.id_convenio = ci.id_convenio) " +
+                    "WHERE ci.id_cliente = ?");
+
+            PreparedStatement stmt = con.prepareStatement(sql.toString());
+
+            stmt.setInt(1, id);
+
+            // Executa-se a consulta
+            ResultSet res = stmt.executeQuery();
+
+            while (res.next()) {
+                cliente = getClienteDTOFromResultSet(res);
+            }
+            return cliente;
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new BancoDeDadosException(e.getCause());
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private Cliente getClienteFromResultSet(ResultSet res) throws SQLException {
         Cliente cliente = new Cliente();
         cliente.setIdCliente(res.getInt("id_cliente"));
@@ -245,17 +284,20 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
 
     private ClienteDTO getClienteDTOFromResultSet(ResultSet res) throws SQLException {
         ConvenioDTO convenioDTO = new ConvenioDTO();
-        UsuarioDTO usuairoDTO = new UsuarioDTO();
-        usuairoDTO.setEmail(res.getString("email"));
-        usuairoDTO.setCpf(res.getString("cpf"));
-        usuairoDTO.setNome(res.getString("nome"));
-        usuairoDTO.setContatos(res.getString("contatos").split("\n"));
-        usuairoDTO.setEndereco(res.getString("endereco"));
-        if (res.getString("cadastro_orgao_regulador") != null){
+        UsuarioDTO usuarioDTO = new UsuarioDTO();
+        usuarioDTO.setIdUsuario((res.getInt("id_usuario")));
+        usuarioDTO.setTipoUsuario(TipoUsuario.recuperarPeloCodigo(res.getInt("tipo")));
+        usuarioDTO.setEmail(res.getString("email"));
+        usuarioDTO.setCpf(res.getString("cpf"));
+        usuarioDTO.setNome(res.getString("nome"));
+        usuarioDTO.setContatos(res.getString("contatos").split("\n"));
+        usuarioDTO.setEndereco(res.getString("endereco"));
+        if (res.getString("cadastro_orgao_regulador") != null) {
+            convenioDTO.setIdConvenio((res.getInt("id_convenio")));
             convenioDTO.setTaxaAbatimento(Double.valueOf(res.getDouble("taxa_abatimento")));
             convenioDTO.setCadastroOragaoRegulador(res.getString("cadastro_orgao_regulador"));
         }
-        return new ClienteDTO(res.getInt(("id_cliente")), usuairoDTO, convenioDTO);
+        return new ClienteDTO(res.getInt(("id_cliente")), usuarioDTO, convenioDTO);
     }
 
 }
