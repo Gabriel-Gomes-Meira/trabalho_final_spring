@@ -1,8 +1,16 @@
 package br.com.dbc.vemser.trabalhofinal.dtos;
 
+import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Data
-public class MedicoDTO {
+@NoArgsConstructor
+@AllArgsConstructor
+public class MedicoDTO extends MedicoCreateDTO{
     private Integer idMedico;
+    private UsuarioDTO usuarioDTO;
+    private EspecialidadeDTO especialidadeDTO;
 }

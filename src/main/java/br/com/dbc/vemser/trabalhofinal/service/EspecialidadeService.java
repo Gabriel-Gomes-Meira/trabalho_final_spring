@@ -41,7 +41,7 @@ public class EspecialidadeService {
             getEspecialidade(id);
             especialidadeRepository.remover(id);
         } catch (BancoDeDadosException e) {
-            throw new RegraDeNegocioException("Especialidade não adicionada por problema no banco de dados.");
+            throw new RegraDeNegocioException("Especialidade não removida por problema no banco de dados.");
         }
     }
 
@@ -51,7 +51,8 @@ public class EspecialidadeService {
         try {
             getEspecialidade(id);
             Especialidade especialidadeEditar = objectMapper.convertValue(especialidade, Especialidade.class);
-            return objectMapper.convertValue(especialidadeRepository.editar(id, especialidadeEditar), EspecialidadeDTO.class);
+            especialidadeRepository.editar(id, especialidadeEditar);
+            return getEspecialidadeDTO(id);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Especialidade não editada por problema no banco de dados.");
         } catch (RegraDeNegocioException e) {

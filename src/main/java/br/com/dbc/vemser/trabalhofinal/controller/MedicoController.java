@@ -5,6 +5,7 @@ import br.com.dbc.vemser.trabalhofinal.dtos.MedicoDTO;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.service.MedicoService;
 import br.com.dbc.vemser.trabalhofinal.service.UsuarioService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,30 +17,21 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/medico")
 @RestController
+@RequiredArgsConstructor
 public class MedicoController {
 
     private final MedicoService medicoService;
-    private final UsuarioService usuarioService;
 
-    public MedicoController(MedicoService medicoService, UsuarioService usuarioService){
-        this.medicoService = medicoService;
-        this.usuarioService = usuarioService;
-    }
 
     @GetMapping // GET localhost:8080/medico
     public ResponseEntity<List<MedicoDTO>> listAll() throws RegraDeNegocioException {
-        return new ResponseEntity<>(medicoService.listar(), HttpStatus.OK);
+        return new ResponseEntity<>(medicoService.listarMedicosUsuarios(), HttpStatus.OK);
     }
 
     @GetMapping("/{idMedico}") // GET localhost:8080/medico/{idMedico}
-    public ResponseEntity<MedicoDTO> listById(@PathVariable("idMedico") Integer id) throws RegraDeNegocioException {
-        return new ResponseEntity<>(medicoService.getMedicoDTO(id), HttpStatus.OK);
+    public ResponseEntity<MedicoDTO> list(@PathVariable("idMedico") Integer id) throws RegraDeNegocioException {
+        return new ResponseEntity<>(medicoService.mostrarInformacoesMedicoUsuario(id), HttpStatus.OK);
     }
-
-//    @GetMapping("/{idMedico}/usuario") // GET localhost:8080/medico/{idMedico}/usuario
-//    public ResponseEntity<HashMap<String, String>> listBy(@PathVariable("idMedico") Integer id) throws RegraDeNegocioException {
-//        return new ResponseEntity<>(medicoService.mostrarInformacoesMedicoUsuario(usuarioService.verificarSeExiste(medicoService.getMedico(id).getIdUsuario())), HttpStatus.OK);
-//    }
 
     @PostMapping // POST localhost:8080/medico
     public ResponseEntity<MedicoDTO> create(@Valid @RequestBody MedicoCreateDTO medico) throws RegraDeNegocioException {

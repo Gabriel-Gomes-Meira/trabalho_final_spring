@@ -2,9 +2,7 @@ package br.com.dbc.vemser.trabalhofinal.service;
 
 import br.com.dbc.vemser.trabalhofinal.dtos.MedicoCreateDTO;
 import br.com.dbc.vemser.trabalhofinal.dtos.MedicoDTO;
-import br.com.dbc.vemser.trabalhofinal.dtos.UsuarioDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Medico;
-import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
 
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
@@ -12,7 +10,6 @@ import br.com.dbc.vemser.trabalhofinal.repository.MedicoRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -29,7 +26,7 @@ public class MedicoService{
         try {
             Medico medicioAdicionar = objectMapper.convertValue(medico, Medico.class);
             Medico medicoAdicionado = medicoRepository.adicionar(medicioAdicionar);
-            return objectMapper.convertValue(medicoAdicionado, MedicoDTO.class);
+            return medicoRepository.getMedicoDTO(medicoAdicionado.getIdMedico());
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Médico não adicionado por problema no banco de dados.");
         } catch (Exception e) {
@@ -71,9 +68,19 @@ public class MedicoService{
         }
     }
 
-    public HashMap<String,String> mostrarInformacoesMedicoUsuario(UsuarioDTO usuarioAtivo) throws RegraDeNegocioException {
+    public MedicoDTO mostrarInformacoesMedicoUsuario(Integer idMedico) throws RegraDeNegocioException {
         try {
-            return medicoRepository.mostrarInformacoesMedicoUsuario(objectMapper.convertValue(usuarioAtivo, Usuario.class));
+            return medicoRepository.getMedicoDTO(idMedico);
+        } catch (BancoDeDadosException e) {
+            throw new RegraDeNegocioException("Informações do médico não mostradas por problema no banco de dados.");
+        } catch (Exception e) {
+            throw new RegraDeNegocioException("Informações do médico não mostradas");
+        }
+    }
+
+    public List<MedicoDTO> listarMedicosUsuarios() throws RegraDeNegocioException {
+        try {
+            return medicoRepository.listarMedicosUsuariosDTOs();
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Informações do médico não mostradas por problema no banco de dados.");
         } catch (Exception e) {
