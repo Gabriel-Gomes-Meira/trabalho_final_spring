@@ -48,19 +48,6 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
             StringBuilder sql = new StringBuilder();
             sql.append("INSERT INTO CLIENTE (id_cliente, id_usuario, id_convenio) values (?, ?, ?)");
 
-//
-//            if (cliente.getIdConvenio()!= null) {
-//                sql.append(" id_convenio,");
-//            }
-//            sql.deleteCharAt(sql.length() - 1); //remove o ultimo ','
-//            sql.append(") values(?, ?,");
-//
-//            if (cliente.getIdConvenio() != null) {
-//                sql.append(" ?,");
-//            }
-//            sql.deleteCharAt(sql.length() - 1); //remove o ultimo ','
-//            sql.append(")");
-
             PreparedStatement stmt = con.prepareStatement(sql.toString());
 
             stmt.setInt(1, cliente.getIdCliente());
@@ -83,7 +70,7 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
         }
     }
 
-    @Override
+    @Override // ERRO:  integrity constraint (SAUDE.FK_AGENDAMENTO_CLIENTE) violated
     public boolean remover(Integer id) throws BancoDeDadosException {
         Connection con = null;
         try {

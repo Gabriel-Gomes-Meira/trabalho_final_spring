@@ -28,9 +28,6 @@ import java.util.stream.Collectors;
 public class ClienteService {
     private final ClienteRepository clienteRepository;
     private final ObjectMapper objectMapper;
-    private final ConvenioService convenioService;
-    private final UsuarioService usuarioService;
-
 
     public ClienteDTO adicionar(ClienteCreateDTO cliente) throws RegraDeNegocioException {
         try {
@@ -65,16 +62,6 @@ public class ClienteService {
 
     public List<ClienteDTO> listar() throws RegraDeNegocioException {
         try {
-//            return clienteRepository.listar()
-//                    .stream()
-//                    .map(cliente -> {
-//                        try {
-//                            return mostrarInformacoesClienteUsuario(cliente.getIdCliente());
-//                        } catch (RegraDeNegocioException e) {
-//                            throw new RuntimeException(e);
-//                        }
-//                    })
-//                    .collect(Collectors.toList());
             return clienteRepository.listarClienteDTOs();
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no Banco!");
@@ -92,21 +79,6 @@ public class ClienteService {
         } catch (BancoDeDadosException e) {
             throw new RuntimeException(e);
         }
-
-
-//        Cliente clienteEntity = verificarSeIdClienteExiste(idCliente);
-//
-//        Usuario usuario = usuarioService.verificarSeExiste(clienteEntity.getIdUsuario());
-//        UsuarioDTO usuarioDTO = objectMapper.convertValue(usuario, UsuarioDTO.class);
-//        try {
-//            Convenio convenio = convenioService.verificarSeExiste(clienteEntity.getIdConvenio());
-//
-//            ConvenioDTO convenioDTO = objectMapper.convertValue(convenio, ConvenioDTO.class);
-//
-//            return new ClienteDTO(clienteEntity.getIdCliente(), usuarioDTO, convenioDTO);
-//        } catch (RegraDeNegocioException e) {
-//            return new ClienteDTO(clienteEntity.getIdCliente(), usuarioDTO, null);
-//        }
     }
 
     private Cliente verificarSeIdClienteExiste(Integer id) throws RegraDeNegocioException {
