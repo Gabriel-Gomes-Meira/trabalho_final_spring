@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -28,7 +27,7 @@ public class MedicoController {
     }
 
     @GetMapping // GET localhost:8080/medico
-    public ResponseEntity<List<MedicoDTO>> list() throws RegraDeNegocioException {
+    public ResponseEntity<List<MedicoDTO>> listAll() throws RegraDeNegocioException {
         return new ResponseEntity<>(medicoService.listar(), HttpStatus.OK);
     }
 

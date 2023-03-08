@@ -7,25 +7,29 @@ import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.repository.UsuarioRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 
 
-@org.springframework.stereotype.Service
+@RequiredArgsConstructor
+@Service
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final ObjectMapper objectMapper;
-
-    public UsuarioService(UsuarioRepository usuarioRepository, ObjectMapper objectMapper) {
-        this.usuarioRepository = usuarioRepository;
-        this.objectMapper = objectMapper;
-    }
+    private final EmailService emailService;
 
     public UsuarioDTO adicionar(UsuarioCreateDTO usuario) throws RegraDeNegocioException {
         try {
-            return objectMapper.convertValue(usuarioRepository.adicionar(validarUsuario(objectMapper.convertValue(usuario, Usuario.class))), UsuarioDTO.class);
+            Usuario usuarioCriado = usuarioRepository.adicionar(
+                    validarUsuario(
+                            objectMapper.convertValue(
+                                    usuario, Usuario.class), false));
+            emailService.sendEmail(usuarioCriado);
+            return objectMapper.convertValue(usuarioCriado, UsuarioDTO.class);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no Banco!");
         }
@@ -44,7 +48,7 @@ public class UsuarioService {
         try {
             Usuario usarioEditar = objectMapper.convertValue(usuario, Usuario.class);
             usarioEditar.setIdUsuario(id);
-            return objectMapper.convertValue(usuarioRepository.editar(id, validarUsuario(usarioEditar)), UsuarioDTO.class);
+            return objectMapper.convertValue(usuarioRepository.editar(id, validarUsuario(usarioEditar, true)), UsuarioDTO.class);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no Banco!");
         }
@@ -60,10 +64,10 @@ public class UsuarioService {
     }
 
     // Pensando se passamos essa validação pro Banco, afim de ganhar mais performance
-    private Usuario validarUsuario(Usuario usuario) throws RegraDeNegocioException {
+    private Usuario validarUsuario(Usuario usuario, boolean updating) throws RegraDeNegocioException {
         try {
 
-            if (usuario.getIdUsuario() != null) {
+            if (updating) {
                 verificarSeExiste(usuario.getIdUsuario());
             }
 
@@ -71,11 +75,11 @@ public class UsuarioService {
             List<Usuario> usuarios = usuarioRepository.listar();
             for (Usuario value : usuarios) {
                 //Quando estivermos atualizando, devemos verifiar se email e cpf já existem em outro usuário ALÉM do que está sendo atualizado.
-                if (value.getCpf().equals(usuario.getCpf()) && (usuario.getIdUsuario() != null &&
+                if (value.getCpf().equals(usuario.getCpf()) && (updating &&
                         !Objects.equals(value.getIdUsuario(), usuario.getIdUsuario()))) {
                     throw new RegraDeNegocioException("Já existe usuário com esse CPF!");
                 }
-                if (value.getEmail().equals(usuario.getEmail()) && (usuario.getIdUsuario() != null &&
+                if (value.getEmail().equals(usuario.getEmail()) && (updating &&
                         !Objects.equals(value.getIdUsuario(), usuario.getIdUsuario()))) {
                     throw new RegraDeNegocioException("Já existe usuário com esse e-mail!");
                 }

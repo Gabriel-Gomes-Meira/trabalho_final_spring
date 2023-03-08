@@ -5,14 +5,12 @@ import br.com.dbc.vemser.trabalhofinal.dtos.ConvenioDTO;
 import br.com.dbc.vemser.trabalhofinal.dtos.UsuarioDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Cliente;
 import br.com.dbc.vemser.trabalhofinal.entity.TipoUsuario;
-import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Repository
@@ -70,7 +68,7 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
         }
     }
 
-    @Override // ERRO:  integrity constraint (SAUDE.FK_AGENDAMENTO_CLIENTE) violated
+    @Override
     public boolean remover(Integer id) throws BancoDeDadosException {
         Connection con = null;
         try {

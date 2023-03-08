@@ -28,18 +28,18 @@ public class ConvenioController {
     }
 
     @PostMapping
-    public ResponseEntity<ConvenioDTO> adicionar(@RequestBody @Valid ConvenioCreateDTO convenio) throws RegraDeNegocioException {
+    public ResponseEntity<ConvenioDTO> create(@RequestBody @Valid ConvenioCreateDTO convenio) throws RegraDeNegocioException {
         return new ResponseEntity<>(convenioService.adicionar(convenio), HttpStatus.OK);
     }
 
     @PutMapping("/{idConvenio}")
-    public ResponseEntity<ConvenioDTO> editar(@PathVariable Integer idConvenio,
+    public ResponseEntity<ConvenioDTO> update(@PathVariable Integer idConvenio,
                                               @RequestBody @Valid ConvenioCreateDTO convenio) throws RegraDeNegocioException {
         return new ResponseEntity<>(convenioService.editar(idConvenio, convenio), HttpStatus.OK);
     }
 
     @DeleteMapping("/{idConvenio}")
-    public ResponseEntity<Void> remover(@PathVariable Integer idConvenio) throws RegraDeNegocioException {
+    public ResponseEntity<Void> delete(@PathVariable Integer idConvenio) throws RegraDeNegocioException {
         convenioService.remover(idConvenio);
         return ResponseEntity.ok().build();
     }

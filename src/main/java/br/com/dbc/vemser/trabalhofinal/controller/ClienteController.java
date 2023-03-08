@@ -2,7 +2,6 @@ package br.com.dbc.vemser.trabalhofinal.controller;
 
 import br.com.dbc.vemser.trabalhofinal.dtos.ClienteCreateDTO;
 import br.com.dbc.vemser.trabalhofinal.dtos.ClienteDTO;
-import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.service.ClienteService;
 import org.springframework.http.HttpStatus;
@@ -35,18 +34,18 @@ public class ClienteController {
     }
 
     @PostMapping
-    public ResponseEntity<ClienteDTO> adicionar(@RequestBody @Valid ClienteCreateDTO cliente) throws RegraDeNegocioException {
+    public ResponseEntity<ClienteDTO> create(@RequestBody @Valid ClienteCreateDTO cliente) throws RegraDeNegocioException {
         return new ResponseEntity<>(clienteService.adicionar(cliente), HttpStatus.OK);
     }
 
     @PutMapping("/{idCliente}")
-    public ResponseEntity<ClienteDTO> editar (@PathVariable Integer idCliente,
+    public ResponseEntity<ClienteDTO> update (@PathVariable Integer idCliente,
                                               @RequestBody @Valid ClienteCreateDTO cliente) throws RegraDeNegocioException {
         return new ResponseEntity<>(clienteService.editar(idCliente, cliente), HttpStatus.OK);
     }
 
     @DeleteMapping("/{idCliente}")
-    public ResponseEntity<Void> remover(@PathVariable Integer idCliente) throws RegraDeNegocioException {
+    public ResponseEntity<Void> delete(@PathVariable Integer idCliente) throws RegraDeNegocioException {
         clienteService.remover(idCliente);
         return ResponseEntity.ok().build();
     }

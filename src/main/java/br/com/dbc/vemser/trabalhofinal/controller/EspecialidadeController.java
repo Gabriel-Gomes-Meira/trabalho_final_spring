@@ -25,7 +25,7 @@ public class EspecialidadeController {
     }
 
     @GetMapping // GET localhost:8080/especialidades
-    public ResponseEntity<List<EspecialidadeDTO>> list() throws RegraDeNegocioException {
+    public ResponseEntity<List<EspecialidadeDTO>> listAll() throws RegraDeNegocioException {
         return new ResponseEntity<>(especialidadeService.listar(), HttpStatus.OK);
     }
 
