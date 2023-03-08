@@ -7,25 +7,26 @@ import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.repository.UsuarioRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 
 
-@org.springframework.stereotype.Service
+@RequiredArgsConstructor
+@Service
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final ObjectMapper objectMapper;
-
-    public UsuarioService(UsuarioRepository usuarioRepository, ObjectMapper objectMapper) {
-        this.usuarioRepository = usuarioRepository;
-        this.objectMapper = objectMapper;
-    }
+    private final EmailService emailService;
 
     public UsuarioDTO adicionar(UsuarioCreateDTO usuario) throws RegraDeNegocioException {
         try {
-            return objectMapper.convertValue(usuarioRepository.adicionar(validarUsuario(objectMapper.convertValue(usuario, Usuario.class))), UsuarioDTO.class);
+            Usuario usuarioCriado = usuarioRepository.adicionar(validarUsuario(objectMapper.convertValue(usuario, Usuario.class)));
+            emailService.sendEmail(usuarioCriado);
+            return objectMapper.convertValue(usuarioCriado, UsuarioDTO.class);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no Banco!");
         }
