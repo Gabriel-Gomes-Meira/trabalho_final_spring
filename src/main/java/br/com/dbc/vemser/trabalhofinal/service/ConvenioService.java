@@ -11,6 +11,7 @@ import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.repository.ConvenioRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,14 +19,12 @@ import java.util.stream.Collectors;
 
 
 @Service
+@RequiredArgsConstructor
 public class ConvenioService {
-    private ConvenioRepository convenioRepository;
+    private final ConvenioRepository convenioRepository;
     private final ObjectMapper objectMapper;
 
-    public ConvenioService(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-        convenioRepository = new ConvenioRepository();
-    }
+
 
     public ConvenioDTO adicionar(ConvenioCreateDTO convenio) throws RegraDeNegocioException {
         try {
