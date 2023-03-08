@@ -42,7 +42,7 @@ public class EspecialidadeService {
             getEspecialidade(id);
             especialidadeRepository.remover(id);
         } catch (BancoDeDadosException e) {
-            throw new RegraDeNegocioException("Especialidade não adicionada por problema no banco de dados.");
+            throw new RegraDeNegocioException("Especialidade não removida por problema no banco de dados.");
         }
     }
 
