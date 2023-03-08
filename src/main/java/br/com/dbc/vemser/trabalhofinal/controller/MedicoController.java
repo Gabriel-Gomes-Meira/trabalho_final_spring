@@ -5,6 +5,7 @@ import br.com.dbc.vemser.trabalhofinal.dtos.MedicoDTO;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.service.MedicoService;
 import br.com.dbc.vemser.trabalhofinal.service.UsuarioService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,15 +18,11 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/medico")
 @RestController
+@RequiredArgsConstructor
 public class MedicoController {
 
     private final MedicoService medicoService;
-    private final UsuarioService usuarioService;
 
-    public MedicoController(MedicoService medicoService, UsuarioService usuarioService){
-        this.medicoService = medicoService;
-        this.usuarioService = usuarioService;
-    }
 
     @GetMapping // GET localhost:8080/medico
     public ResponseEntity<List<MedicoDTO>> listAll() throws RegraDeNegocioException {
