@@ -16,15 +16,15 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/especialidade")
-public class EspecialidadeController {
+public class EspecialidadeController implements InterfaceDocumentacao<EspecialidadeDTO, EspecialidadeCreateDTO, Integer> {
 
     private final EspecialidadeService especialidadeService;
 
-    public EspecialidadeController(EspecialidadeService especialidadeService){
+    public EspecialidadeController(EspecialidadeService especialidadeService) {
         this.especialidadeService = especialidadeService;
     }
 
-    @GetMapping // GET localhost:8080/especialidades
+    @Override // GET localhost:8080/especialidades
     public ResponseEntity<List<EspecialidadeDTO>> listAll() throws RegraDeNegocioException {
         return new ResponseEntity<>(especialidadeService.listar(), HttpStatus.OK);
     }
@@ -34,24 +34,24 @@ public class EspecialidadeController {
         return new ResponseEntity<>(especialidadeService.getEspecialidadeDTO(id), HttpStatus.OK);
     }
 
-    @PostMapping // POST localhost:8080/especialidade
-    public ResponseEntity<EspecialidadeDTO> create(@Valid @RequestBody EspecialidadeCreateDTO especialidade) throws RegraDeNegocioException {
+    @Override
+    public ResponseEntity<EspecialidadeDTO> create(EspecialidadeCreateDTO especialidade) throws RegraDeNegocioException {
         log.info("Criando especialidade...");
         EspecialidadeDTO especialidadeCriada = especialidadeService.adicionar(especialidade);
         log.info("Especialidade criada!");
         return new ResponseEntity<>(especialidadeCriada, HttpStatus.OK);
     }
 
-    @PutMapping("/{idEspecialidade}") // PUT localhost:8080/especialidade/{idEspecialidade}
-    public ResponseEntity<EspecialidadeDTO> update(@PathVariable("idEspecialidade") Integer id, @Valid @RequestBody EspecialidadeCreateDTO especialidade) throws RegraDeNegocioException {
+    @Override
+    public ResponseEntity<EspecialidadeDTO> update(Integer id, EspecialidadeCreateDTO especialidade) throws RegraDeNegocioException {
         log.info("Atualizando especialidade...");
         EspecialidadeDTO especialidadeAtualizada = especialidadeService.editar(id, especialidade);
         log.info("Especialidade atualizada!");
         return new ResponseEntity<>(especialidadeAtualizada, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{idEspecialidade}") // DELETE localhost:8080/especialidade/{idEspecialidade}
-    public ResponseEntity<Void> delete(@PathVariable("idEspecialidade") Integer id) throws RegraDeNegocioException {
+    @Override
+    public ResponseEntity<Void> delete(Integer id) throws RegraDeNegocioException {
         log.info("Deletando especialidade...");
         especialidadeService.remover(id);
         log.info("Especialidade deletada!");

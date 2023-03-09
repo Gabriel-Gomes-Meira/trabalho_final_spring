@@ -44,7 +44,7 @@ public interface InterfaceDocumentacao<saida, entrada, id> {
                     @ApiResponse(responseCode = "500", description = "Foi gerada uma exceção")
             }
     )
-    @PutMapping("/{idUsuario}")
+    @PutMapping("/{id}")
     ResponseEntity<saida> update(@PathVariable id id, @Valid @RequestBody entrada e) throws RegraDeNegocioException;
 
     @Operation(summary = "Deletar registro", description = "Detela um registro passando o id")
@@ -55,6 +55,6 @@ public interface InterfaceDocumentacao<saida, entrada, id> {
                     @ApiResponse(responseCode = "500", description = "Foi gerada uma exceção")
             }
     )
-    @PutMapping("/{idUsuario}")
+    @DeleteMapping("/{id}")
     ResponseEntity<Void> delete(@PathVariable id id) throws RegraDeNegocioException;
 }

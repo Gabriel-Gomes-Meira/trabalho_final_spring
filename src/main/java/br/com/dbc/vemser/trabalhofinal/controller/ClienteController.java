@@ -15,7 +15,7 @@ import java.util.List;
 @Validated
 @RestController
 @RequestMapping("/cliente")
-public class ClienteController {
+public class ClienteController implements InterfaceDocumentacao<ClienteDTO, ClienteCreateDTO, Integer> {
 
     private final ClienteService clienteService;
 
@@ -23,7 +23,7 @@ public class ClienteController {
         this.clienteService = clienteService;
     }
 
-    @GetMapping
+    @Override
     public ResponseEntity<List<ClienteDTO>> listAll() throws RegraDeNegocioException {
         return new ResponseEntity<>(clienteService.listar(), HttpStatus.OK);
     }
@@ -33,23 +33,21 @@ public class ClienteController {
         return new ResponseEntity<>(clienteService.mostrarInformacoesClienteUsuario(idCliente), HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<ClienteDTO> create(@RequestBody @Valid ClienteCreateDTO cliente) throws RegraDeNegocioException {
+    @Override
+    public ResponseEntity<ClienteDTO> create(ClienteCreateDTO cliente) throws RegraDeNegocioException {
         return new ResponseEntity<>(clienteService.adicionar(cliente), HttpStatus.OK);
     }
 
-    @PutMapping("/{idCliente}")
-    public ResponseEntity<ClienteDTO> update (@PathVariable Integer idCliente,
-                                              @RequestBody @Valid ClienteCreateDTO cliente) throws RegraDeNegocioException {
+    @Override
+    public ResponseEntity<ClienteDTO> update(Integer idCliente, ClienteCreateDTO cliente) throws RegraDeNegocioException {
         return new ResponseEntity<>(clienteService.editar(idCliente, cliente), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{idCliente}")
-    public ResponseEntity<Void> delete(@PathVariable Integer idCliente) throws RegraDeNegocioException {
+    @Override
+    public ResponseEntity<Void> delete(Integer idCliente) throws RegraDeNegocioException {
         clienteService.remover(idCliente);
         return ResponseEntity.ok().build();
     }
-
 
 
 }

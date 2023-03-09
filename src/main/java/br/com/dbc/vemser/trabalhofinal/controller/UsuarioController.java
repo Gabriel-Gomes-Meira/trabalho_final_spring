@@ -33,13 +33,13 @@ public class UsuarioController implements InterfaceDocumentacao<UsuarioDTO, Usua
     }
 
     @Override
-    public ResponseEntity<UsuarioDTO> update(Integer idUsuario, UsuarioCreateDTO usuario) throws RegraDeNegocioException {
-        return new ResponseEntity<>(usuarioService.editar(idUsuario, usuario), HttpStatus.OK);
+    public ResponseEntity<UsuarioDTO> update(Integer id, UsuarioCreateDTO usuario) throws RegraDeNegocioException {
+        return new ResponseEntity<>(usuarioService.editar(id, usuario), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Void> delete(Integer idUsuario) throws RegraDeNegocioException {
-        usuarioService.remover(idUsuario);
+    public ResponseEntity<Void> delete(Integer id) throws RegraDeNegocioException {
+        usuarioService.remover(id);
         return ResponseEntity.ok().build();
     }
 

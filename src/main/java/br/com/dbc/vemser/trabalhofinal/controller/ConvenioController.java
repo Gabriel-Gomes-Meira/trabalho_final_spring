@@ -18,28 +18,27 @@ import java.util.List;
 @RestController
 @RequestMapping("/convenio")
 @RequiredArgsConstructor
-public class ConvenioController {
+public class ConvenioController implements InterfaceDocumentacao<ConvenioDTO, ConvenioCreateDTO, Integer> {
 
     private final ConvenioService convenioService;
 
-    @GetMapping
+    @Override
     public ResponseEntity<List<ConvenioDTO>> listAll() throws RegraDeNegocioException {
         return new ResponseEntity<>(convenioService.listar(), HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<ConvenioDTO> create(@RequestBody @Valid ConvenioCreateDTO convenio) throws RegraDeNegocioException {
+    @Override
+    public ResponseEntity<ConvenioDTO> create(ConvenioCreateDTO convenio) throws RegraDeNegocioException {
         return new ResponseEntity<>(convenioService.adicionar(convenio), HttpStatus.OK);
     }
 
-    @PutMapping("/{idConvenio}")
-    public ResponseEntity<ConvenioDTO> update(@PathVariable Integer idConvenio,
-                                              @RequestBody @Valid ConvenioCreateDTO convenio) throws RegraDeNegocioException {
+    @Override
+    public ResponseEntity<ConvenioDTO> update(Integer idConvenio, ConvenioCreateDTO convenio) throws RegraDeNegocioException {
         return new ResponseEntity<>(convenioService.editar(idConvenio, convenio), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{idConvenio}")
-    public ResponseEntity<Void> delete(@PathVariable Integer idConvenio) throws RegraDeNegocioException {
+    @Override
+    public ResponseEntity<Void> delete(Integer idConvenio) throws RegraDeNegocioException {
         convenioService.remover(idConvenio);
         return ResponseEntity.ok().build();
     }
