@@ -8,22 +8,22 @@ import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.repository.MedicoRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
+@RequiredArgsConstructor
 @Service
 public class MedicoService{
     private final MedicoRepository medicoRepository;
     private final ObjectMapper objectMapper;
-
-    public MedicoService(MedicoRepository medicoRepository, ObjectMapper objectMapper) {
-        this.medicoRepository = medicoRepository;
-        this.objectMapper = objectMapper;
-    }
+    private final UsuarioService usuarioService;
 
     public MedicoDTO adicionar(MedicoCreateDTO medico) throws RegraDeNegocioException {
         try {
+            usuarioService.verificarIdUsuario(medico.getIdUsuario());
             Medico medicioAdicionar = objectMapper.convertValue(medico, Medico.class);
             Medico medicoAdicionado = medicoRepository.adicionar(medicioAdicionar);
             return medicoRepository.getMedicoDTO(medicoAdicionado.getIdMedico());
@@ -47,7 +47,9 @@ public class MedicoService{
 
     public MedicoDTO editar(Integer id, MedicoCreateDTO medico) throws RegraDeNegocioException {
         try {
-            getMedico(id);
+            if (!Objects.equals(getMedico(id).getIdUsuario(), medico.getIdUsuario())){
+                usuarioService.verificarIdUsuario(medico.getIdUsuario());
+            }
             Medico medicoEditar = objectMapper.convertValue(medico, Medico.class);
             Medico medicoEditado = medicoRepository.editar(id, medicoEditar);
             return objectMapper.convertValue(medicoEditado, MedicoDTO.class);

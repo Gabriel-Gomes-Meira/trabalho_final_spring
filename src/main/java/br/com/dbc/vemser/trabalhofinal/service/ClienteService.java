@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -21,9 +22,11 @@ import java.util.List;
 public class ClienteService {
     private final ClienteRepository clienteRepository;
     private final ObjectMapper objectMapper;
+    private final UsuarioService usuarioService;
 
     public ClienteDTO adicionar(ClienteCreateDTO cliente) throws RegraDeNegocioException {
         try {
+            usuarioService.verificarIdUsuario(cliente.getIdUsuario());
             Cliente clienteEntity = objectMapper.convertValue(cliente, Cliente.class);
             clienteRepository.adicionar(clienteEntity);
             return objectMapper.convertValue(clienteEntity, ClienteDTO.class);
@@ -35,7 +38,7 @@ public class ClienteService {
 
     public void remover(Integer id) throws RegraDeNegocioException {
         try {
-            verificarSeIdClienteExiste(id);
+            getCliente(id);
             clienteRepository.remover(id);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no Banco!");
@@ -45,7 +48,9 @@ public class ClienteService {
     public ClienteDTO editar(Integer id, ClienteCreateDTO cliente) throws RegraDeNegocioException {
         try {
             Cliente clienteEntity = objectMapper.convertValue(cliente, Cliente.class);
-            verificarSeIdClienteExiste(id);
+            if (!Objects.equals(getCliente(id).getIdUsuario(), clienteEntity.getIdUsuario())){
+                usuarioService.verificarIdUsuario(clienteEntity.getIdUsuario());
+            }
             clienteRepository.editar(id, clienteEntity);
             return objectMapper.convertValue(clienteEntity, ClienteDTO.class);
         } catch (BancoDeDadosException e) {
@@ -74,7 +79,7 @@ public class ClienteService {
         }
     }
 
-    private Cliente verificarSeIdClienteExiste(Integer id) throws RegraDeNegocioException {
+    private Cliente getCliente(Integer id) throws RegraDeNegocioException {
         try {
             return clienteRepository.listar()
                     .stream()

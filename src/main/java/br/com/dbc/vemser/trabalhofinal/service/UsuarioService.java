@@ -7,9 +7,12 @@ import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.repository.UsuarioRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,13 +25,18 @@ public class UsuarioService {
     private final ObjectMapper objectMapper;
     private final EmailService emailService;
 
-    public UsuarioDTO adicionar(UsuarioCreateDTO usuario) throws RegraDeNegocioException {
+    public UsuarioDTO adicionar(UsuarioCreateDTO usuario) throws RegraDeNegocioException{
         try {
             Usuario usuarioCriado = usuarioRepository.adicionar(
                     validarUsuario(
                             objectMapper.convertValue(
                                     usuario, Usuario.class), false));
-            emailService.sendEmail(usuarioCriado);
+             try {
+                 emailService.sendEmail(usuarioCriado);
+             } catch (MessagingException | TemplateException | IOException e) {
+                 usuarioRepository.remover(usuarioCriado.getIdUsuario());
+                 throw new RegraDeNegocioException("Erro ao enviar o e-mail!");
+             }
             return objectMapper.convertValue(usuarioCriado, UsuarioDTO.class);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no Banco!");
@@ -37,7 +45,7 @@ public class UsuarioService {
 
     public void remover(Integer id) throws RegraDeNegocioException {
         try {
-            verificarSeExiste(id);
+            getUsuario(id);
             usuarioRepository.remover(id);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no Banco!");
@@ -68,7 +76,7 @@ public class UsuarioService {
         try {
 
             if (updating) {
-                verificarSeExiste(usuario.getIdUsuario());
+                getUsuario(usuario.getIdUsuario());
             }
 
             // Estou iterando com 'fori comum' pois não consigo levantar exceções dentro do forEach. Apesar de poder tratálos...
@@ -92,19 +100,7 @@ public class UsuarioService {
     }
 
 
-
-//    public Usuario verificarSeExiste(Integer id) throws RegraDeNegocioException{
-//        try {
-//           return usuarioRepository.listar().stream()
-//                    .filter(pessoa -> pessoa.getIdUsuario().equals(id))
-//                    .findFirst()
-//                    .orElseThrow(() -> new RegraDeNegocioException("Usuário não encontrado!"));
-//        } catch (BancoDeDadosException e) {
-//            throw new RegraDeNegocioException("Erro no Banco!");
-//        }
-//    }
-
-    public Usuario verificarSeExiste(Integer id) throws RegraDeNegocioException{
+    public Usuario getUsuario(Integer id) throws RegraDeNegocioException{
         try {
             return  usuarioRepository.getUmId(id);
         } catch (BancoDeDadosException e) {
@@ -113,26 +109,28 @@ public class UsuarioService {
     }
 
     public UsuarioDTO getOne(Integer id) throws RegraDeNegocioException {
-        return objectMapper.convertValue(verificarSeExiste(id), UsuarioDTO.class);
+        return objectMapper.convertValue(getUsuario(id), UsuarioDTO.class);
     }
 
     // Verifica a disponilidade do id_usuario
 
-    public boolean verificarIdUsuario(Integer id) throws RegraDeNegocioException {
+    public void verificarIdUsuario(Integer id) throws RegraDeNegocioException {
         try {
-            return usuarioRepository.verificarSeDisponivel(id);
+            if(!usuarioRepository.verificarSeDisponivel(id)) {
+                throw new RegraDeNegocioException("O id de usuário informado não está disponível para uso!");
+            }
         } catch (BancoDeDadosException e){
             throw new RegraDeNegocioException("Erro no banco!");
         }
     }
 
-    public boolean authUser(String email, String password) throws RegraDeNegocioException {
-        try {
-            List<Usuario> tempList = usuarioRepository.listar().stream().filter(usuario -> usuario.getEmail().equals(email)
-                    && usuario.getSenha().equals(password)).toList();
-            return tempList.size() > 0;
-        } catch (BancoDeDadosException e) {
-            throw new RegraDeNegocioException("Erro no banco!");
-        }
-    }
+//    public boolean authUser(String email, String password) throws RegraDeNegocioException {
+//        try {
+//            List<Usuario> tempList = usuarioRepository.listar().stream().filter(usuario -> usuario.getEmail().equals(email)
+//                    && usuario.getSenha().equals(password)).toList();
+//            return tempList.size() > 0;
+//        } catch (BancoDeDadosException e) {
+//            throw new RegraDeNegocioException("Erro no banco!");
+//        }
+//    }
 }
