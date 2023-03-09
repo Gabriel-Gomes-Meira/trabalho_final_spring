@@ -72,14 +72,10 @@ public class EmailService {
         return mimeMessageHelper;
     }
 
-    public void sendEmail(Usuario usuario) throws RegraDeNegocioException {
-        try{
+    public void sendEmail(Usuario usuario) throws MessagingException, TemplateException, IOException {
             MimeMessageHelper mimeMessageHelper = buildEmail(usuario.getEmail(), "Criação de Usuáiro");
             mimeMessageHelper.setText(getUsuarioTemplate(usuario.getNome()), true);
             emailSender.send(mimeMessageHelper.getMimeMessage());
-        } catch (IOException | MessagingException | TemplateException e) {
-            throw new RegraDeNegocioException("Erro ao enviar email!");
-        }
     }
 
 //    public void sendEmail(ClienteDTO cliente, MedicoDTO medico) throws IOException {
