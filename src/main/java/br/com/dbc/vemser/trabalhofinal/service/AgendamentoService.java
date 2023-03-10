@@ -4,21 +4,17 @@ import br.com.dbc.vemser.trabalhofinal.dto.AgendamentoCreateDTO;
 import br.com.dbc.vemser.trabalhofinal.dto.AgendamentoDTO;
 import br.com.dbc.vemser.trabalhofinal.dto.AgendamentoDadosDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Agendamento;
-import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
+import br.com.dbc.vemser.trabalhofinal.entity.TipoUsuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.repository.AgendamentoRepository;
-
-import br.com.dbc.vemser.trabalhofinal.repository.ClienteRepository;
-import br.com.dbc.vemser.trabalhofinal.repository.UsuarioRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+@Service
 @RequiredArgsConstructor
 public class AgendamentoService {
 
@@ -28,7 +24,7 @@ public class AgendamentoService {
     private final ObjectMapper objectMapper;
 
 
-    public AgendamentoDTO adicionar(AgendamentoDTO agendamentoCreateDTO) throws RegraDeNegocioException {
+    public AgendamentoDTO adicionar(AgendamentoCreateDTO agendamentoCreateDTO) throws RegraDeNegocioException {
         try {
             clienteService.getCliente(agendamentoCreateDTO.getIdCliente());
             medicoService.getMedico(agendamentoCreateDTO.getIdMedico());
@@ -37,9 +33,10 @@ public class AgendamentoService {
             ), AgendamentoDTO.class);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no banco de dados.");
-        } catch (Exception e) {
-            throw new RegraDeNegocioException("Houve algum erro ao adicionar o agendamento.");
         }
+//        catch (Exception e) {
+//            throw new RegraDeNegocioException("Houve algum erro ao adicionar o agendamento.");
+//        }
     }
 
     public void remover(Integer id) throws RegraDeNegocioException {
@@ -48,9 +45,10 @@ public class AgendamentoService {
             agendamentoRepository.remover(id);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no banco de dados.");
-        } catch (Exception e) {
-            throw new RegraDeNegocioException("Houve algum erro ao remover o agendamento.");
         }
+//        catch (Exception e) {
+//            throw new RegraDeNegocioException("Houve algum erro ao remover o agendamento.");
+//        }
     }
 
     public AgendamentoDTO editar(Integer id, AgendamentoCreateDTO agendamentoCreateDTO) throws RegraDeNegocioException {
@@ -58,14 +56,16 @@ public class AgendamentoService {
             agendamentoRepository.getAgendamento(id);
             clienteService.getCliente(agendamentoCreateDTO.getIdCliente());
             medicoService.getMedico(agendamentoCreateDTO.getIdMedico());
+
             return objectMapper.convertValue(agendamentoRepository.editar(id,
                     objectMapper.convertValue(agendamentoCreateDTO, Agendamento.class)
             ), AgendamentoDTO.class);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no banco de dados.");
-        } catch (Exception e) {
-            throw new RegraDeNegocioException("Houve algum erro ao editar o agendamento.");
         }
+//        catch (Exception e) {
+//            throw new RegraDeNegocioException("Houve algum erro ao editar o agendamento.");
+//        }
     }
 
     public List<AgendamentoDTO> listar() throws RegraDeNegocioException {
@@ -79,8 +79,20 @@ public class AgendamentoService {
         }
     }
 
-    public  List<AgendamentoDadosDTO> listarPorUsuario(Integer idUsuario) throws RegraDeNegocioException {
-        return agendamentoRepository.mostrarAgendamentosUsuario();
+    public  List<AgendamentoDadosDTO> listarPorMedico(Integer idMedico) throws RegraDeNegocioException {
+        try {
+            return agendamentoRepository.mostrarAgendamentosUsuario(idMedico, TipoUsuario.MEDICO);
+        } catch (BancoDeDadosException e) {
+            throw new RegraDeNegocioException("Erro no banco!");
+        }
+    }
+
+    public  List<AgendamentoDadosDTO> listarPorCliente(Integer idCliente) throws RegraDeNegocioException {
+        try {
+            return agendamentoRepository.mostrarAgendamentosUsuario(idCliente, TipoUsuario.CLIENTE);
+        } catch (BancoDeDadosException e) {
+            throw new RegraDeNegocioException("Erro no banco!");
+        }
     }
 
 
