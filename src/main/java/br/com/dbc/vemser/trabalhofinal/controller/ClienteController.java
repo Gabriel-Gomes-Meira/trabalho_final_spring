@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Validated
@@ -28,9 +27,10 @@ public class ClienteController implements InterfaceDocumentacao<ClienteDTO, Clie
         return new ResponseEntity<>(clienteService.listar(), HttpStatus.OK);
     }
 
-    @GetMapping("/{idCliente}")
-    public ResponseEntity<ClienteDTO> mostrarinfoClienteUsuario(@PathVariable Integer idCliente) throws RegraDeNegocioException {
-        return new ResponseEntity<>(clienteService.mostrarInformacoesClienteUsuario(idCliente), HttpStatus.OK);
+
+    @Override
+    public ResponseEntity<ClienteDTO> getById(@PathVariable Integer id) throws RegraDeNegocioException {
+        return new ResponseEntity<>(clienteService.getById(id), HttpStatus.OK);
     }
 
     @Override

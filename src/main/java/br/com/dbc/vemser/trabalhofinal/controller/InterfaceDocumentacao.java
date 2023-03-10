@@ -23,6 +23,16 @@ public interface InterfaceDocumentacao<saida, entrada, id> {
     @GetMapping
     ResponseEntity<List<saida>> listAll() throws RegraDeNegocioException;
 
+    @Operation(summary = "Listar registros", description = "Lista todos os registros")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Todos os registros foram listados com sucesso"),
+                    @ApiResponse(responseCode = "403", description = "Você não tem permissão para acessar este recurso"),
+                    @ApiResponse(responseCode = "500", description = "Foi gerada uma exceção")
+            }
+    )
+    @GetMapping("/{id}")
+    ResponseEntity<saida> getById(@PathVariable id id) throws RegraDeNegocioException;
 
     @Operation(summary = "Criar registro", description = "Cria um registro")
     @ApiResponses(

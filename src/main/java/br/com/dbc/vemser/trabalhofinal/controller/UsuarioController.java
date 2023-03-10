@@ -1,5 +1,6 @@
 package br.com.dbc.vemser.trabalhofinal.controller;
 
+import br.com.dbc.vemser.trabalhofinal.dto.ClienteDTO;
 import br.com.dbc.vemser.trabalhofinal.dto.UsuarioCreateDTO;
 import br.com.dbc.vemser.trabalhofinal.dto.UsuarioDTO;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
@@ -27,6 +28,10 @@ public class UsuarioController implements InterfaceDocumentacao<UsuarioDTO, Usua
         return new ResponseEntity<>(usuarioService.listar(), HttpStatus.OK);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<UsuarioDTO> getById(@PathVariable Integer id) throws RegraDeNegocioException {
+        return new ResponseEntity<>(usuarioService.getById(id), HttpStatus.OK);
+    }
     @Override
     public ResponseEntity<UsuarioDTO> create(UsuarioCreateDTO usuario) throws RegraDeNegocioException {
         return new ResponseEntity<>(usuarioService.adicionar(usuario), HttpStatus.OK);

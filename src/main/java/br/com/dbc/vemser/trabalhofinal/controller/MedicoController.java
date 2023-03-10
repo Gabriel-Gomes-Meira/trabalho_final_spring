@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/medico")
 @RestController
 @RequiredArgsConstructor
-public class MedicoController implements InterfaceDocumentacao<MedicoDTO, MedicoCreateDTO, Integer>{
+public class MedicoController implements InterfaceDocumentacao<MedicoDTO, MedicoCreateDTO, Integer> {
 
     private final MedicoService medicoService;
 
@@ -29,13 +29,13 @@ public class MedicoController implements InterfaceDocumentacao<MedicoDTO, Medico
         return new ResponseEntity<>(medicoService.listarMedicosUsuarios(), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}") // GET localhost:8080/medico/{id}
-    public ResponseEntity<MedicoDTO> list(@PathVariable("id") Integer id) throws RegraDeNegocioException {
+    @Override
+    public ResponseEntity<MedicoDTO> getById(Integer id) throws RegraDeNegocioException {
         return new ResponseEntity<>(medicoService.mostrarInformacoesMedicoUsuario(id), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<MedicoDTO> create( MedicoCreateDTO medico) throws RegraDeNegocioException {
+    public ResponseEntity<MedicoDTO> create(MedicoCreateDTO medico) throws RegraDeNegocioException {
         log.info("Criando médico...");
         MedicoDTO medicoCriado = medicoService.adicionar(medico);
         log.info("Médico criado!");
@@ -49,6 +49,7 @@ public class MedicoController implements InterfaceDocumentacao<MedicoDTO, Medico
         log.info("Médico atualizado!");
         return new ResponseEntity<>(medicoAtualizado, HttpStatus.OK);
     }
+
     @Override
     public ResponseEntity<Void> delete(Integer id) throws RegraDeNegocioException {
         log.info("Deletando médico...");

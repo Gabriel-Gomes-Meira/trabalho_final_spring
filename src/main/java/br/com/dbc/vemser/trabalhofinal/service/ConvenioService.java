@@ -21,7 +21,6 @@ public class ConvenioService {
     private final ObjectMapper objectMapper;
 
 
-
     public ConvenioDTO adicionar(ConvenioCreateDTO convenio) throws RegraDeNegocioException {
         try {
             Convenio convenioEntity = objectMapper.convertValue(convenio, Convenio.class);
@@ -65,7 +64,7 @@ public class ConvenioService {
         }
     }
 
-    public Convenio verificarSeExiste(Integer id) throws RegraDeNegocioException{
+    public Convenio verificarSeExiste(Integer id) throws RegraDeNegocioException {
         try {
             return convenioRepository.getUmId(id);
         } catch (BancoDeDadosException e) {
@@ -85,4 +84,11 @@ public class ConvenioService {
         }
     }
 
+    public ConvenioDTO getById(Integer id) throws RegraDeNegocioException {
+        try {
+            return objectMapper.convertValue(convenioRepository.getUmId(id), ConvenioDTO.class);
+        } catch (BancoDeDadosException e) {
+            throw new RegraDeNegocioException(("Erro no banco"));
+        }
+    }
 }

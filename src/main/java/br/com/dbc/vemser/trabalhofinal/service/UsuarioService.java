@@ -25,18 +25,18 @@ public class UsuarioService {
     private final ObjectMapper objectMapper;
     private final EmailService emailService;
 
-    public UsuarioDTO adicionar(UsuarioCreateDTO usuario) throws RegraDeNegocioException{
+    public UsuarioDTO adicionar(UsuarioCreateDTO usuario) throws RegraDeNegocioException {
         try {
             Usuario usuarioCriado = usuarioRepository.adicionar(
                     validarUsuario(
                             objectMapper.convertValue(
                                     usuario, Usuario.class), false));
-             try {
-                 emailService.sendEmail(usuarioCriado);
-             } catch (MessagingException | TemplateException | IOException e) {
-                 usuarioRepository.remover(usuarioCriado.getIdUsuario());
-                 throw new RegraDeNegocioException("Erro ao enviar o e-mail!");
-             }
+            try {
+                emailService.sendEmail(usuarioCriado);
+            } catch (MessagingException | TemplateException | IOException e) {
+                usuarioRepository.remover(usuarioCriado.getIdUsuario());
+                throw new RegraDeNegocioException("Erro ao enviar o e-mail!");
+            }
             return objectMapper.convertValue(usuarioCriado, UsuarioDTO.class);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no Banco!");
@@ -93,22 +93,22 @@ public class UsuarioService {
                 }
             }
 
-            return  usuario;
+            return usuario;
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no Banco!");
         }
     }
 
 
-    public Usuario getUsuario(Integer id) throws RegraDeNegocioException{
+    public Usuario getUsuario(Integer id) throws RegraDeNegocioException {
         try {
-            return  usuarioRepository.getUmId(id);
+            return usuarioRepository.getUmId(id);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no Banco!");
         }
     }
 
-    public UsuarioDTO getOne(Integer id) throws RegraDeNegocioException {
+    public UsuarioDTO getById(Integer id) throws RegraDeNegocioException {
         return objectMapper.convertValue(getUsuario(id), UsuarioDTO.class);
     }
 
@@ -116,13 +116,14 @@ public class UsuarioService {
 
     public void verificarIdUsuario(Integer id) throws RegraDeNegocioException {
         try {
-            if(!usuarioRepository.verificarSeDisponivel(id)) {
+            if (!usuarioRepository.verificarSeDisponivel(id)) {
                 throw new RegraDeNegocioException("O id de usuário informado não está disponível para uso!");
             }
-        } catch (BancoDeDadosException e){
+        } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no banco!");
         }
     }
+
 
 //    public boolean authUser(String email, String password) throws RegraDeNegocioException {
 //        try {

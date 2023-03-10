@@ -5,6 +5,7 @@ import br.com.dbc.vemser.trabalhofinal.dto.EspecialidadeCreateDTO;
 import br.com.dbc.vemser.trabalhofinal.dto.EspecialidadeDTO;
 import br.com.dbc.vemser.trabalhofinal.service.EspecialidadeService;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,22 +16,20 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/especialidade")
 public class EspecialidadeController implements InterfaceDocumentacao<EspecialidadeDTO, EspecialidadeCreateDTO, Integer> {
 
     private final EspecialidadeService especialidadeService;
 
-    public EspecialidadeController(EspecialidadeService especialidadeService) {
-        this.especialidadeService = especialidadeService;
-    }
 
     @Override // GET localhost:8080/especialidades
     public ResponseEntity<List<EspecialidadeDTO>> listAll() throws RegraDeNegocioException {
         return new ResponseEntity<>(especialidadeService.listar(), HttpStatus.OK);
     }
 
-    @GetMapping("/{idEspecialidade}") // GET localhost:8080/especialidade/{idEspecialidade}
-    public ResponseEntity<EspecialidadeDTO> listByEndereco(@PathVariable("idEspecialidade") Integer id) throws RegraDeNegocioException {
+    @Override
+    public ResponseEntity<EspecialidadeDTO> getById(Integer id) throws RegraDeNegocioException {
         return new ResponseEntity<>(especialidadeService.getEspecialidadeDTO(id), HttpStatus.OK);
     }
 

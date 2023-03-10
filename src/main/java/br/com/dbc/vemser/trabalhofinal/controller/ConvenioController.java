@@ -3,6 +3,7 @@ package br.com.dbc.vemser.trabalhofinal.controller;
 
 import br.com.dbc.vemser.trabalhofinal.dto.ConvenioCreateDTO;
 import br.com.dbc.vemser.trabalhofinal.dto.ConvenioDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.EspecialidadeDTO;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.service.ConvenioService;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,8 @@ import java.util.List;
 
 @Validated
 @RestController
-@RequestMapping("/convenio")
 @RequiredArgsConstructor
+@RequestMapping("/convenio")
 public class ConvenioController implements InterfaceDocumentacao<ConvenioDTO, ConvenioCreateDTO, Integer> {
 
     private final ConvenioService convenioService;
@@ -25,6 +26,11 @@ public class ConvenioController implements InterfaceDocumentacao<ConvenioDTO, Co
     @Override
     public ResponseEntity<List<ConvenioDTO>> listAll() throws RegraDeNegocioException {
         return new ResponseEntity<>(convenioService.listar(), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<ConvenioDTO> getById(@PathVariable("id") Integer id) throws RegraDeNegocioException {
+        return new ResponseEntity<>(convenioService.getById(id), HttpStatus.OK);
     }
 
     @Override
@@ -43,3 +49,4 @@ public class ConvenioController implements InterfaceDocumentacao<ConvenioDTO, Co
         return ResponseEntity.ok().build();
     }
 }
+

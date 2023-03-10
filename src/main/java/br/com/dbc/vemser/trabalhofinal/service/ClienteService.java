@@ -66,7 +66,7 @@ public class ClienteService {
         }
     }
 
-    public ClienteDTO mostrarInformacoesClienteUsuario(Integer idCliente) throws RegraDeNegocioException {
+    public ClienteDTO getById(Integer idCliente) throws RegraDeNegocioException {
         try {
             ClienteDTO clienteDTO = clienteRepository.listarClienteDTOId(idCliente);
             if (clienteDTO != null) {
