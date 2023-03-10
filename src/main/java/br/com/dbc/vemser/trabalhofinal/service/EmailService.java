@@ -1,6 +1,9 @@
 package br.com.dbc.vemser.trabalhofinal.service;
 
 
+import br.com.dbc.vemser.trabalhofinal.dto.AgendamentoDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.AgendamentoDadosDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.UsuarioDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import freemarker.template.Configuration;
@@ -32,81 +35,83 @@ public class EmailService {
 
     private final JavaMailSender emailSender;
 
-//    public void sendSimpleMessage() {
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        message.setFrom(from);
-//        helper.setTo("");
-//        message.setSubject("E-mail Simples");
-//        message.setText("Teste \n minha mensagem \n\nAtt,\nSistema.");
-//        emailSender.send(message);
-//    }
+    // USUÁRIO
 
-//    public void sendWithAttachment() throws MessagingException, FileNotFoundException {
-//        MimeMessage message = emailSender.createMimeMessage();
-//
-//        MimeMessageHelper helper = new MimeMessageHelper(message,
-//                true);
-//
-//        helper.setFrom(from);
-//        helper.setTo("");
-//        helper.setSubject("E-mail com Anexo");
-//        helper.setText("Teste\n minha mensagem \n\nAtt,\nSistema.");
-//
-//        File file1 = ResourceUtils.getFile("classpath:imagem.jpg");
-//        //File file1 = new File("imagem.jpg");
-//        FileSystemResource file
-//                = new FileSystemResource(file1);
-//        helper.addAttachment(file1.getName(), file);
-//
-//        emailSender.send(message);
-//    }
+    public void sendEmailUsuario(UsuarioDTO usuarioDTO, TipoEmail tipoEmail) throws MessagingException, TemplateException, IOException {
+            MimeMessageHelper mimeMessageHelper = buildEmailUsuario(usuarioDTO.getEmail(), tipoEmail);
+            mimeMessageHelper.setText(getUsuarioTemplate(usuarioDTO, tipoEmail), true);
 
-    public MimeMessageHelper buildEmail(String email, String subject) throws MessagingException {
+            emailSender.send(mimeMessageHelper.getMimeMessage());
+    }
+
+    public MimeMessageHelper buildEmailUsuario(String email, TipoEmail tipoEmail) throws MessagingException {
         MimeMessage mimeMessage = emailSender.createMimeMessage();
-
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
 
         mimeMessageHelper.setFrom(from);
         mimeMessageHelper.setTo(email);
-        mimeMessageHelper.setSubject(subject);
+        mimeMessageHelper.setSubject(tipoEmail.getAssunto());
         return mimeMessageHelper;
     }
 
-    public void sendEmail(Usuario usuario) throws MessagingException, TemplateException, IOException {
-            MimeMessageHelper mimeMessageHelper = buildEmail(usuario.getEmail(), "Criação de Usuáiro");
-            mimeMessageHelper.setText(getUsuarioTemplate(usuario.getNome()), true);
-            emailSender.send(mimeMessageHelper.getMimeMessage());
-    }
-
-//    public void sendEmail(ClienteDTO cliente, MedicoDTO medico) throws IOException {
-//        MimeMessageHelper mimeMessageHelper = buildEmail(cliente.getUsuarioDTO().getEmail(), "Agendamento Marcado");
-//        mimeMessageHelper.setText(getAgendamentoTemplate(cliente.getUsuarioDTO().getNome(),
-//                "Mensagem da marcação"), true);
-//        emailSender.send(mimeMessageHelper.getMimeMessage());
-//    }
-//
-//    public void sendEmail(MedicoDTO medico, ClienteDTO cliente) {
-//        MimeMessageHelper mimeMessageHelper = buildEmail(medico.getUsuarioDTO().getEmail(), "Novo Agendamento");
-//        mimeMessageHelper.setText(getAgendamentoTemplate(medico.getUsuarioDTO().getNome(),
-//                "Mensagem da marcação"), true);
-//        emailSender.send(mimeMessageHelper.getMimeMessage());
-//    }
-
-    public String getUsuarioTemplate(String nome) throws IOException, TemplateException {
+    public String getUsuarioTemplate(UsuarioDTO usuarioDTO, TipoEmail tipo) throws IOException, TemplateException {
         Map<String, Object> dados = new HashMap<>();
-        dados.put("nome", nome);
         dados.put("email", from);
+        dados.put("usuario", usuarioDTO);
+        Template template = fmConfiguration.getTemplate("usuario-cadastro.ftl");
 
-        Template template = fmConfiguration.getTemplate("email-criacao-usuario.ftl");
         return FreeMarkerTemplateUtils.processTemplateIntoString(template, dados);
     }
 
-//    public String getAgendamentoTemplate(String nome, String message) throws IOException, TemplateException {
-//        Map<String, Object> dados = new HashMap<>();
-//        dados.put("nome", cliente.getUsuarioDTO().getNome());
-//        dados.put("message", message);
-//        Template template = fmConfiguration.getTemplate("email-agenadmento.ftl");
-//        return FreeMarkerTemplateUtils.processTemplateIntoString(template, dados);
-//    }
+
+    // AGENDAMENTO
+
+    public void sendEmailAgendamento(UsuarioDTO usuario, AgendamentoDadosDTO agendamento, TipoEmail tipoEmail) throws MessagingException, TemplateException, IOException {
+        MimeMessageHelper mimeMessageHelper = buildEmailAgendamento(usuario.getEmail(), tipoEmail);
+        mimeMessageHelper.setText(getAgendamentoTemplate(agendamento, tipoEmail), true);
+
+        emailSender.send(mimeMessageHelper.getMimeMessage());
+    }
+
+    public MimeMessageHelper buildEmailAgendamento(String email, TipoEmail tipoEmail) throws MessagingException {
+        MimeMessage mimeMessage = emailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+
+        mimeMessageHelper.setFrom(from);
+        mimeMessageHelper.setTo(email);
+        mimeMessageHelper.setSubject(tipoEmail.getAssunto());
+        return mimeMessageHelper;
+    }
+
+    public String getAgendamentoTemplate(AgendamentoDadosDTO agendamentoDadosDTO, TipoEmail tipo) throws IOException, TemplateException {
+        Template template = null;
+        Map<String, Object> dados = new HashMap<>();
+        dados.put("agendamento", agendamentoDadosDTO);
+        dados.put("email", from);
+
+        switch (tipo){
+            case AGENDAMENTO_CRIADO_CLIENTE ->
+                    template = fmConfiguration.getTemplate("agendamento-criado-cliente.ftl");
+
+            case AGENDAMENTO_CRIADO_MEDICO ->
+                    template = fmConfiguration.getTemplate("agendamento-criado-medico.ftl");
+
+            case AGENDAMENTO_EDITADO_CLIENTE ->
+                    template = fmConfiguration.getTemplate("agendamento-editado-cliente.ftl");
+
+            case AGENDAMENTO_EDITADO_MEDICO ->
+                    template = fmConfiguration.getTemplate("agendamento-editado-medico.ftl");
+
+            case AGENDAMENTO_CANCELADO_CLIENTE ->
+                    template = fmConfiguration.getTemplate("agendamento-cancelado-cliente.ftl");
+
+            case AGENDAMENTO_CANCELADO_MEDICO ->
+                    template = fmConfiguration.getTemplate("agendamento-cancelado-medico.ftl");
+            default ->
+                    template = fmConfiguration.getTemplate("agendamento-criado-cliente.ftl");
+        }
+
+        return FreeMarkerTemplateUtils.processTemplateIntoString(template, dados);
+    }
 
 }
