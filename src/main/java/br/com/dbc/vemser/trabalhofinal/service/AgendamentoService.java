@@ -1,77 +1,85 @@
 package br.com.dbc.vemser.trabalhofinal.service;
 
+import br.com.dbc.vemser.trabalhofinal.dto.AgendamentoCreateDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.AgendamentoDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Agendamento;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
+import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.repository.AgendamentoRepository;
+
+import br.com.dbc.vemser.trabalhofinal.repository.ClienteRepository;
+import br.com.dbc.vemser.trabalhofinal.repository.UsuarioRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@RequiredArgsConstructor
 public class AgendamentoService {
 
-    private AgendamentoRepository agendamentoRepository;
+    private final AgendamentoRepository agendamentoRepository;
+    private final ClienteService clienteService;
+    private final MedicoService medicoService;
+    private final ObjectMapper objectMapper;
 
-    public AgendamentoService() {
-        this.agendamentoRepository = new AgendamentoRepository();
-    }
 
-
-    public void adicionar(Agendamento agendamento) {
+    public AgendamentoDTO adicionar(AgendamentoDTO agendamentoCreateDTO) throws RegraDeNegocioException {
         try {
-            Agendamento agendamentoAdicionado = agendamentoRepository.adicionar(agendamento);
-            System.out.println("Agendamento adicinado com sucesso! " + agendamentoAdicionado);
-
+            clienteService.getCliente(agendamentoCreateDTO.getIdCliente());
+            medicoService.getMedico(agendamentoCreateDTO.getIdMedico());
+            return objectMapper.convertValue(agendamentoRepository.adicionar(agendamentoCreateDTO), AgendamentoDTO.class);
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Erro no banco de dados.");
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Houve algum erro ao adicionar o agendamento.");
         }
     }
 
-    public void remover(Integer id) {
+    public void remover(Integer id) throws RegraDeNegocioException {
         try {
-            boolean conseguiuRemover = agendamentoRepository.remover(id);
-            System.out.println("removido? " + conseguiuRemover + "| com id=" + id);
+            agendamentoRepository.getAgendamento();
+            agendamentoRepository.remover(id);
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Erro no banco de dados.");
+        } catch (Exception e) {
+            throw new RegraDeNegocioException("Houve algum erro ao remover o agendamento.");
         }
     }
 
-
-    public void editar(Integer id, Agendamento agendamento) {
+    public AgendamentoDTO editar(Integer id, AgendamentoCreateDTO agendamentoCreateDTO) throws RegraDeNegocioException {
         try {
-            agendamentoRepository.editar(id, agendamento);
-//            System.out.println("editado? " + conseguiuEditar + "| com id=" + id);
-
+            agendamentoRepository.getAgendamento();
+            clienteService.getCliente(agendamentoCreateDTO.getIdCliente());
+            medicoService.getMedico(agendamentoCreateDTO.getIdMedico());
+            return objectMapper.convertValue(agendamentoRepository.editar(id, agendamentoCreateDTO), AgendamentoDTO.class);
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Erro no banco de dados.");
+        } catch (Exception e) {
+            throw new RegraDeNegocioException("Houve algum erro ao editar o agendamento.");
         }
     }
 
-    public List<Usuario> listar() {
+    public List<AgendamentoDTO> listar() throws RegraDeNegocioException {
         try {
-            agendamentoRepository.listar().forEach(System.out::println);
+            return agendamentoRepository.listar();
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Erro no banco de dados.");
+        } catch (Exception e) {
+            throw new RegraDeNegocioException("Houve algum erro ao listar os agendamentos.");
         }
-        return null;
     }
 
-    public void mostrarAgendamentosUsuario(Usuario usuarioAtivo){
+    public AgendamentoDTO getAgendamento(Integer id) throws RegraDeNegocioException {
         try {
-            List<HashMap<String,String>> agendamentos = agendamentoRepository.mostrarAgendamentosUsuario(usuarioAtivo);
-            for (HashMap<String,String> informacoes: agendamentos) {
-                for (Map.Entry<String, String> set : informacoes.entrySet()) {
-                    System.out.println(set.getKey() + " "
-                            + set.getValue());
-                }
-            }
-
+            return agendamentoRepository.getAgendamento(id);
         } catch (BancoDeDadosException e) {
-            e.printStackTrace();
+            throw new RegraDeNegocioException("Erro no banco de dados.");
+        } catch (Exception e) {
+            throw new RegraDeNegocioException("Houve algum erro ao listar os agendamentos.");
         }
     }
 
