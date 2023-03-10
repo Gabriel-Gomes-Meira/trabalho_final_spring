@@ -103,29 +103,8 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
         try {
             con = ConexaoBancoDeDados.getConnection();
 
-//            StringBuilder sql = new StringBuilder();
-//            sql.append("UPDATE CLIENTE SET id_convenio = ?, id_convenio = ? WHERE id_cliente = ?");
             String sql = "UPDATE CLIENTE SET id_usuario = ?, id_convenio = ? WHERE id_cliente = ?";
             PreparedStatement stmt = con.prepareStatement(sql);
-
-//            if (cliente.getIdUsuario() != null) {
-//                sql.append(" id_usuario = ?,");
-//            }
-//            if (cliente.getIdConvenio() != null) {
-//                sql.append(" id_convenio = ?,");
-//            }
-
-//            sql.deleteCharAt(sql.length() - 1); //remove o ultimo ','
-//            sql.append(" where id_cliente = ?");
-//            PreparedStatement stmt = con.prepareStatement(sql.toString());
-
-//            int index = 1;
-//            if (cliente.getIdUsuario() != null) {
-//                stmt.setInt(index++, cliente.getIdUsuario());
-//            }
-//            if (cliente.getIdConvenio() != null) {
-//                stmt.setInt(index++, cliente.getIdConvenio());
-//            }
 
             int index = 1;
             stmt.setInt(index++, cliente.getIdUsuario());
@@ -276,7 +255,8 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
         usuarioDTO.setCpf(res.getString("cpf"));
         usuarioDTO.setNome(res.getString("nome"));
         usuarioDTO.setContatos(res.getString("contatos").split("\n"));
-        usuarioDTO.setEndereco(res.getString("endereco"));
+        usuarioDTO.setCep(res.getString("cep"));
+        usuarioDTO.setNumero(res.getInt("numero"));
         if (res.getString("cadastro_orgao_regulador") != null) {
             convenioDTO.setIdConvenio((res.getInt("id_convenio")));
             convenioDTO.setTaxaAbatimento(Double.valueOf(res.getDouble("taxa_abatimento")));

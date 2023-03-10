@@ -43,7 +43,7 @@ public class UsuarioRepository implements Repositorio<Integer, Usuario> {
             usuario.setIdUsuario(proximoId);
 
             StringBuilder sql = new StringBuilder();
-            sql.append("INSERT INTO USUARIO (id_usuario, cpf, email, nome, senha, tipo, endereco, contatos) values(?, ?, ?, ?, ?, ?, ?, ?)");
+            sql.append("INSERT INTO USUARIO (id_usuario, cpf, email, nome, senha, tipo, cep, numero, contatos) values(?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
 //            sql.deleteCharAt(sql.length() - 1); //remove o ultimo ','
 //            sql.append(")");
@@ -58,8 +58,9 @@ public class UsuarioRepository implements Repositorio<Integer, Usuario> {
             stmt.setString(4, usuario.getNome());
             stmt.setString(5, usuario.getSenha());
             stmt.setInt(6, usuario.getTipoUsuario().getValor());
-            stmt.setString(7, usuario.getEndereco());
-            stmt.setString(8, String.join("\n",usuario.getContatos()));
+            stmt.setString(7, usuario.getCep());
+            stmt.setInt(8, usuario.getNumero());
+            stmt.setString(9, String.join("\n",usuario.getContatos()));
 
             stmt.executeUpdate();
             return usuario;
@@ -113,7 +114,7 @@ public class UsuarioRepository implements Repositorio<Integer, Usuario> {
         try {
             con = ConexaoBancoDeDados.getConnection();
 
-            String sql = "UPDATE USUARIO SET  cpf = ?, email = ?, nome = ?, senha = ?, tipo = ?, endereco = ?, contatos = ? where id_usuario = ?";
+            String sql = "UPDATE USUARIO SET  cpf = ?, email = ?, nome = ?, senha = ?, tipo = ?, cep = ?, numero = ?, contatos = ? where id_usuario = ?";
             PreparedStatement stmt = con.prepareStatement(sql);
 
             int index = 1;
@@ -122,7 +123,8 @@ public class UsuarioRepository implements Repositorio<Integer, Usuario> {
             stmt.setString(index++, usuario.getNome());
             stmt.setString(index++, usuario.getSenha());
             stmt.setInt(index++, usuario.getTipoUsuario().getValor());
-            stmt.setString(index++, usuario.getEndereco());
+            stmt.setString(index++, usuario.getCep());
+            stmt.setInt(index++, usuario.getNumero());
             stmt.setString(index++, String.join(String.join("\n", usuario.getContatos())));
 
             stmt.setInt(index, id);
@@ -183,7 +185,8 @@ public class UsuarioRepository implements Repositorio<Integer, Usuario> {
             usuario.setCpf(res.getString("cpf"));
             usuario.setEmail(res.getString("email"));
             usuario.setSenha(res.getString("senha"));
-            usuario.setEndereco(res.getString("endereco"));
+            usuario.setCep(res.getString("cep"));
+            usuario.setNumero(res.getInt("numero"));
             usuario.setContatos(res.getString("contatos").split("\n"));
             int tipo = res.getInt("tipo");
             if(tipo == 1){

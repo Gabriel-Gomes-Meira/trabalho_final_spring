@@ -15,4 +15,5 @@ public class ClienteDTO {
     private UsuarioDTO usuarioDTO;
     @Schema(description = "Objeto ConvenioDTO", required = true)
     private ConvenioDTO convenioDTO;
+
 }

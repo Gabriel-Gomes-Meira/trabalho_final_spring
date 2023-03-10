@@ -284,7 +284,8 @@ MedicoRepository implements Repositorio<Integer, Medico> {
         usuarioDTO.setCpf(res.getString("cpf"));
         usuarioDTO.setNome(res.getString("nome"));
         usuarioDTO.setContatos(res.getString("contatos").split("\n"));
-        usuarioDTO.setEndereco(res.getString("endereco"));
+        usuarioDTO.setCep(res.getString("cep"));
+        usuarioDTO.setNumero(res.getInt("numero"));
 
         especialidadeDTO.setIdEspecialidade(res.getInt("id_Especialidade"));
         especialidadeDTO.setValor(res.getDouble("valor"));

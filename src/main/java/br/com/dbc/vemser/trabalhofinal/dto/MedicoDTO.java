@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class MedicoDTO extends MedicoCreateDTO{
 
     @Schema(description = "Id do Medico", example = "1", required = true)

@@ -21,9 +21,11 @@ public class UsuarioDTO {
     @Schema(description = "Cep do endereço", example = "12345678")
     private String cep;
     @Schema(description = "Número do endereço", example = "44545454")
-    private String numero;
+    private Integer numero;
     @Schema(description = "Número de telefone ou celular", example = "84261850")
     private String[] contatos;
     @Schema(description = "Indentificar se o usuário é um médico ou um cliente", example = "MEDICO")
     private TipoUsuario tipoUsuario;
+    @Schema(description = "Endereço completo")
+    private EnderecoDTO endereco;
 }

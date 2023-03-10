@@ -10,9 +10,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
-@AllArgsConstructor
-@RequiredArgsConstructor
-
 public class MedicoCreateDTO {
 
     @NotBlank
