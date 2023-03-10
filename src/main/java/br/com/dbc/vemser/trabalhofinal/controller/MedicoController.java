@@ -1,9 +1,8 @@
 package br.com.dbc.vemser.trabalhofinal.controller;
 
 import br.com.dbc.vemser.trabalhofinal.dto.MedicoCreateDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.MedicoCompletoDTO;
 import br.com.dbc.vemser.trabalhofinal.dto.MedicoDTO;
-import br.com.dbc.vemser.trabalhofinal.dto.UsuarioCreateDTO;
-import br.com.dbc.vemser.trabalhofinal.dto.UsuarioDTO;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.service.MedicoService;
 import lombok.RequiredArgsConstructor;
@@ -12,40 +11,42 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
 @RequestMapping("/medico")
 @RestController
 @RequiredArgsConstructor
-public class MedicoController implements InterfaceDocumentacao<MedicoDTO, MedicoCreateDTO, Integer> {
+public class MedicoController implements InterfaceDocumentacao<MedicoCompletoDTO, MedicoCreateDTO, Integer> {
 
     private final MedicoService medicoService;
 
-
+    @GetMapping("/simple")
+    public ResponseEntity<List<MedicoDTO>> listAllSimple() throws RegraDeNegocioException {
+        return new ResponseEntity<>(medicoService.listar(), HttpStatus.OK);
+    }
     @Override
-    public ResponseEntity<List<MedicoDTO>> listAll() throws RegraDeNegocioException {
-        return new ResponseEntity<>(medicoService.listarMedicosUsuarios(), HttpStatus.OK);
+    public ResponseEntity<List<MedicoCompletoDTO>> listAll() throws RegraDeNegocioException {
+        return new ResponseEntity<>(medicoService.listarFull(), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<MedicoDTO> getById(Integer id) throws RegraDeNegocioException {
-        return new ResponseEntity<>(medicoService.mostrarInformacoesMedicoUsuario(id), HttpStatus.OK);
+    public ResponseEntity<MedicoCompletoDTO> getById(Integer id) throws RegraDeNegocioException {
+        return new ResponseEntity<>(medicoService.getMedicoDTOById(id), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<MedicoDTO> create(MedicoCreateDTO medico) throws RegraDeNegocioException {
+    public ResponseEntity<MedicoCompletoDTO> create(MedicoCreateDTO medico) throws RegraDeNegocioException {
         log.info("Criando médico...");
-        MedicoDTO medicoCriado = medicoService.adicionar(medico);
+        MedicoCompletoDTO medicoCriado = medicoService.adicionar(medico);
         log.info("Médico criado!");
         return new ResponseEntity<>(medicoCriado, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<MedicoDTO> update(Integer id, MedicoCreateDTO medico) throws RegraDeNegocioException {
+    public ResponseEntity<MedicoCompletoDTO> update(Integer id, MedicoCreateDTO medico) throws RegraDeNegocioException {
         log.info("Atualizando médico...");
-        MedicoDTO medicoAtualizado = medicoService.editar(id, medico);
+        MedicoCompletoDTO medicoAtualizado = medicoService.editar(id, medico);
         log.info("Médico atualizado!");
         return new ResponseEntity<>(medicoAtualizado, HttpStatus.OK);
     }
@@ -57,5 +58,7 @@ public class MedicoController implements InterfaceDocumentacao<MedicoDTO, Medico
         log.info("Médico deletado!");
         return ResponseEntity.ok().build();
     }
+
+    // <TODO> endpoint listMinimazed
 
 }

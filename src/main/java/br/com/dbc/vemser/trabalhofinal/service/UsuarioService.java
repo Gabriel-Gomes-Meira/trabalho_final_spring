@@ -33,12 +33,12 @@ public class UsuarioService {
                     validarUsuario(
                             objectMapper.convertValue(
                                     usuario, Usuario.class), false));
-            try {
-                emailService.sendEmail(usuarioCriado);
-            } catch (MessagingException | TemplateException | IOException e) {
-                usuarioRepository.remover(usuarioCriado.getIdUsuario());
-                throw new RegraDeNegocioException("Erro ao enviar o e-mail!");
-            }
+//            try {
+////                emailService.sendEmailUsuario(usuarioCriado);
+//            } catch (MessagingException | TemplateException | IOException e) {
+//                usuarioRepository.remover(usuarioCriado.getIdUsuario());
+//                throw new RegraDeNegocioException("Erro ao enviar o e-mail!");
+//            }
             UsuarioDTO retorno = objectMapper.convertValue(usuarioCriado, UsuarioDTO.class);
             retorno.setEndereco(enderecoClient.getEndereco(retorno.getCep()));
             return retorno;

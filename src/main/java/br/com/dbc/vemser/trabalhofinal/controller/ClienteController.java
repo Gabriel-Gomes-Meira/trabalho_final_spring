@@ -23,8 +23,8 @@ public class ClienteController implements InterfaceDocumentacao<ClienteCompletoD
         this.clienteService = clienteService;
     }
 
-    @GetMapping("/minimized")
-    public ResponseEntity<List<ClienteDTO>> listAllMinimized() throws RegraDeNegocioException {
+    @GetMapping("/simple")
+    public ResponseEntity<List<ClienteDTO>> listAllSimple() throws RegraDeNegocioException {
         return new ResponseEntity<>(clienteService.listar(), HttpStatus.OK);
     }
 

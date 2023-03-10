@@ -1,7 +1,7 @@
 package br.com.dbc.vemser.trabalhofinal.repository;
 
 import br.com.dbc.vemser.trabalhofinal.dto.EspecialidadeDTO;
-import br.com.dbc.vemser.trabalhofinal.dto.MedicoDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.MedicoCompletoDTO;
 import br.com.dbc.vemser.trabalhofinal.dto.UsuarioDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Medico;
 import br.com.dbc.vemser.trabalhofinal.entity.TipoUsuario;
@@ -49,14 +49,12 @@ MedicoRepository implements Repositorio<Integer, Medico> {
 
             PreparedStatement stmt = con.prepareStatement(sql.toString());
 
-
             stmt.setInt(1, medico.getIdMedico());
             stmt.setString(2, medico.getCrm());
             stmt.setInt(3, medico.getIdEspecialidade());
             stmt.setInt(4, medico.getIdUsuario());
 
-            int res = stmt.executeUpdate();
-            System.out.println("adicionarMedico.res=" + res);
+            stmt.executeUpdate();
             return medico;
         } catch (SQLException e) {
             throw new BancoDeDadosException(e.getCause());
@@ -110,7 +108,7 @@ MedicoRepository implements Repositorio<Integer, Medico> {
             StringBuilder sql = new StringBuilder();
             sql.append("UPDATE MEDICO SET ");
 
-            if(medico.getCrm() != null){
+            if(medico.getCrm() != null){ //<todo> remover o if
                 sql.append(" crm = ?,");
             }
             if(medico.getIdEspecialidade() != null){
@@ -142,8 +140,7 @@ MedicoRepository implements Repositorio<Integer, Medico> {
             stmt.setInt(index, id);
 
             // Executa-se a consulta
-            int res = stmt.executeUpdate();
-            System.out.println("editarMedico.res=" + res);
+            stmt.executeUpdate();
 
             return medico;
         } catch (SQLException e) {
@@ -201,14 +198,14 @@ MedicoRepository implements Repositorio<Integer, Medico> {
         return medico;
     }
 
-    public List<MedicoDTO> listarMedicosUsuariosDTOs() throws BancoDeDadosException {
-        List<MedicoDTO> medicos = new ArrayList<>();
+    public List<MedicoCompletoDTO> listarMedicosUsuariosDTOs() throws BancoDeDadosException {
+        List<MedicoCompletoDTO> medicos = new ArrayList<>();
         Connection con = null;
         try {
             con = ConexaoBancoDeDados.getConnection();
             Statement stmt = con.createStatement();
 
-            String sql = "SELECT u.id_usuario, u.tipo, u.email, u.email, u.cpf, u.nome, u.contatos, u.cep, m.id_medico, m.crm, " +
+            String sql = "SELECT u.id_usuario, u.tipo, u.email, u.cpf, u.nome, u.contatos, u.cep, u.numero, m.id_medico, m.crm, " +
                     "es.id_especialidade, es.valor, es.nome AS especialidade " +
                     "FROM Medico m " +
                     "INNER JOIN USUARIO u ON (u.id_usuario = m.id_usuario) " +
@@ -218,7 +215,7 @@ MedicoRepository implements Repositorio<Integer, Medico> {
             ResultSet res = stmt.executeQuery(sql);
 
             while (res.next()) {
-                MedicoDTO medico = getMedicoDTOFromResultSet(res);
+                MedicoCompletoDTO medico = getMedicoDTOFromResultSet(res);
                 medicos.add(medico);
             }
             return medicos;
@@ -236,13 +233,13 @@ MedicoRepository implements Repositorio<Integer, Medico> {
         }
     }
 
-    public MedicoDTO getMedicoDTO(Integer id) throws BancoDeDadosException {
-        MedicoDTO medicoDTO = new MedicoDTO();
+    public MedicoCompletoDTO getMedicoDTO(Integer id) throws BancoDeDadosException {
+        MedicoCompletoDTO medicoCompletoDTO = new MedicoCompletoDTO();
         Connection con = null;
         try {
             con = ConexaoBancoDeDados.getConnection();
 
-            String sql = "SELECT u.id_usuario, u.tipo, u.email, u.email, u.cpf, u.nome, u.contatos, u.cep, m.id_medico, m.crm, " +
+            String sql = "SELECT u.id_usuario, u.tipo, u.email, u.cpf, u.nome, u.contatos, u.cep, u.numero ,m.id_medico, m.crm, " +
                     "es.id_especialidade, es.valor, es.nome AS especialidade " +
                     "FROM Medico m " +
                     "INNER JOIN USUARIO u ON (u.id_usuario = m.id_usuario) " +
@@ -256,9 +253,9 @@ MedicoRepository implements Repositorio<Integer, Medico> {
             ResultSet res = stmt.executeQuery();
 
             while (res.next()) {
-                medicoDTO = getMedicoDTOFromResultSet(res);
+                medicoCompletoDTO = getMedicoDTOFromResultSet(res);
             }
-            return medicoDTO;
+            return medicoCompletoDTO;
         } catch (SQLException e) {
             log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
@@ -273,10 +270,10 @@ MedicoRepository implements Repositorio<Integer, Medico> {
         }
     }
 
-    private MedicoDTO getMedicoDTOFromResultSet(ResultSet res) throws SQLException {
+    private MedicoCompletoDTO getMedicoDTOFromResultSet(ResultSet res) throws SQLException {
         EspecialidadeDTO especialidadeDTO = new EspecialidadeDTO();
         UsuarioDTO usuarioDTO = new UsuarioDTO();
-        MedicoDTO medicoDTO = new MedicoDTO();
+        MedicoCompletoDTO medicoCompletoDTO = new MedicoCompletoDTO();
 
         usuarioDTO.setIdUsuario((res.getInt("id_usuario")));
         usuarioDTO.setTipoUsuario(TipoUsuario.recuperarPeloCodigo(res.getInt("tipo")));
@@ -291,14 +288,14 @@ MedicoRepository implements Repositorio<Integer, Medico> {
         especialidadeDTO.setValor(res.getDouble("valor"));
         especialidadeDTO.setNome(res.getString("especialidade"));
 
-        medicoDTO.setEspecialidadeDTO(especialidadeDTO);
-        medicoDTO.setIdMedico(res.getInt("id_medico"));
-        medicoDTO.setCrm(res.getString("crm").trim());
-        medicoDTO.setUsuarioDTO(usuarioDTO);
-        medicoDTO.setIdEspecialidade(res.getInt("id_especialidade"));
-        medicoDTO.setIdUsuario(res.getInt("id_usuario"));
+        medicoCompletoDTO.setEspecialidade(especialidadeDTO);
+        medicoCompletoDTO.setIdMedico(res.getInt("id_medico"));
+        medicoCompletoDTO.setCrm(res.getString("crm").trim());
+        medicoCompletoDTO.setUsuario(usuarioDTO);
+        medicoCompletoDTO.setIdEspecialidade(res.getInt("id_especialidade"));
+        medicoCompletoDTO.setIdUsuario(res.getInt("id_usuario"));
 
-        return medicoDTO;
+        return medicoCompletoDTO;
     }
 
 }
