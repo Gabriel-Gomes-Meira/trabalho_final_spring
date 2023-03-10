@@ -1,8 +1,6 @@
 package br.com.dbc.vemser.trabalhofinal.controller;
 
 import br.com.dbc.vemser.trabalhofinal.client.EnderecoClient;
-import br.com.dbc.vemser.trabalhofinal.dto.ClienteDTO;
-import br.com.dbc.vemser.trabalhofinal.dto.EnderecoDTO;
 import br.com.dbc.vemser.trabalhofinal.dto.UsuarioCreateDTO;
 import br.com.dbc.vemser.trabalhofinal.dto.UsuarioDTO;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;

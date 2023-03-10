@@ -1,11 +1,8 @@
 package br.com.dbc.vemser.trabalhofinal.repository;
 
-import br.com.dbc.vemser.trabalhofinal.dto.AgendamentoDTO;
 import br.com.dbc.vemser.trabalhofinal.dto.AgendamentoDadosDTO;
-import br.com.dbc.vemser.trabalhofinal.dto.ClienteDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Agendamento;
 import br.com.dbc.vemser.trabalhofinal.entity.TipoUsuario;
-import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -14,7 +11,6 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Slf4j

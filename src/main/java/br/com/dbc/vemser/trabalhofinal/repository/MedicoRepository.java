@@ -208,7 +208,7 @@ MedicoRepository implements Repositorio<Integer, Medico> {
             con = ConexaoBancoDeDados.getConnection();
             Statement stmt = con.createStatement();
 
-            String sql = "SELECT u.id_usuario, u.tipo, u.email, u.email, u.cpf, u.nome, u.contatos, u.endereco, m.id_medico, m.crm, " +
+            String sql = "SELECT u.id_usuario, u.tipo, u.email, u.email, u.cpf, u.nome, u.contatos, u.cep, m.id_medico, m.crm, " +
                     "es.id_especialidade, es.valor, es.nome AS especialidade " +
                     "FROM Medico m " +
                     "INNER JOIN USUARIO u ON (u.id_usuario = m.id_usuario) " +
@@ -242,7 +242,7 @@ MedicoRepository implements Repositorio<Integer, Medico> {
         try {
             con = ConexaoBancoDeDados.getConnection();
 
-            String sql = "SELECT u.id_usuario, u.tipo, u.email, u.email, u.cpf, u.nome, u.contatos, u.endereco, m.id_medico, m.crm, " +
+            String sql = "SELECT u.id_usuario, u.tipo, u.email, u.email, u.cpf, u.nome, u.contatos, u.cep, m.id_medico, m.crm, " +
                     "es.id_especialidade, es.valor, es.nome AS especialidade " +
                     "FROM Medico m " +
                     "INNER JOIN USUARIO u ON (u.id_usuario = m.id_usuario) " +

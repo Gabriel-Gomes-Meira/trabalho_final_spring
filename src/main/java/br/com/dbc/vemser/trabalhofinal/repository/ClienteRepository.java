@@ -1,6 +1,6 @@
 package br.com.dbc.vemser.trabalhofinal.repository;
 
-import br.com.dbc.vemser.trabalhofinal.dto.ClienteDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.ClienteCompletoDTO;
 import br.com.dbc.vemser.trabalhofinal.dto.ConvenioDTO;
 import br.com.dbc.vemser.trabalhofinal.dto.UsuarioDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Cliente;
@@ -163,15 +163,15 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
         }
     }
 
-    public List<ClienteDTO> listarClienteDTOs() throws BancoDeDadosException {
-        List<ClienteDTO> clietes = new ArrayList<>();
+    public List<ClienteCompletoDTO> listarClienteDTOs() throws BancoDeDadosException {
+        List<ClienteCompletoDTO> clietes = new ArrayList<>();
         Connection con = null;
         try {
             con = ConexaoBancoDeDados.getConnection();
             Statement stmt = con.createStatement();
 
-            String sql = "SELECT u.id_usuario, u.tipo, u.email, u.email, u.cpf, u.nome, u.contatos, u.endereco, ci.id_cliente, " +
-                    "con.cadastro_orgao_regulador, con.taxa_abatimento, con.id_convenio " +
+            String sql = "SELECT u.id_usuario, u.tipo, u.email, u.email, u.cpf, u.nome, u.contatos, u.cep, u.numero, " +
+                    "ci.id_cliente, con.cadastro_orgao_regulador, con.taxa_abatimento, con.id_convenio " +
                     "FROM Cliente ci " +
                     "INNER JOIN USUARIO u ON (u.id_usuario = ci.id_usuario) " +
                     "LEFT JOIN CONVENIO CON ON (con.id_convenio = ci.id_convenio) ";
@@ -181,7 +181,7 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
             ResultSet res = stmt.executeQuery(sql);
 
             while (res.next()) {
-                ClienteDTO cliente = getClienteDTOFromResultSet(res);
+                ClienteCompletoDTO cliente = getClienteDTOFromResultSet(res);
                 clietes.add(cliente);
             }
             return clietes;
@@ -199,14 +199,14 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
         }
     }
 
-    public ClienteDTO listarClienteDTOId(Integer id) throws BancoDeDadosException {
+    public ClienteCompletoDTO getClienteCompletoDTO(Integer id) throws BancoDeDadosException {
         Connection con = null;
         try {
-            ClienteDTO cliente = null;
+            ClienteCompletoDTO cliente = null;
             con = ConexaoBancoDeDados.getConnection();
 
             StringBuilder sql = new StringBuilder();
-            sql.append("SELECT u.id_usuario, u.tipo,u.email, u.cpf, u.nome, u.contatos, u.endereco, ci.id_cliente, " +
+            sql.append("SELECT u.id_usuario, u.tipo,u.email, u.cpf, u.nome, u.contatos, u.cep, u.numero, u.nome, ci.id_cliente, " +
                     "con.cadastro_orgao_regulador, con.taxa_abatimento, con.id_convenio " +
                     "FROM Cliente ci " +
                     "INNER JOIN USUARIO u ON (u.id_usuario = ci.id_usuario) " +
@@ -246,8 +246,8 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
         return cliente;
     }
 
-    private ClienteDTO getClienteDTOFromResultSet(ResultSet res) throws SQLException {
-        ConvenioDTO convenioDTO = new ConvenioDTO();
+    private ClienteCompletoDTO getClienteDTOFromResultSet(ResultSet res) throws SQLException {
+        ConvenioDTO convenioDTO = null;
         UsuarioDTO usuarioDTO = new UsuarioDTO();
         usuarioDTO.setIdUsuario((res.getInt("id_usuario")));
         usuarioDTO.setTipoUsuario(TipoUsuario.recuperarPeloCodigo(res.getInt("tipo")));
@@ -258,11 +258,12 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
         usuarioDTO.setCep(res.getString("cep"));
         usuarioDTO.setNumero(res.getInt("numero"));
         if (res.getString("cadastro_orgao_regulador") != null) {
+            convenioDTO = new ConvenioDTO();
             convenioDTO.setIdConvenio((res.getInt("id_convenio")));
             convenioDTO.setTaxaAbatimento(Double.valueOf(res.getDouble("taxa_abatimento")));
             convenioDTO.setCadastroOragaoRegulador(res.getString("cadastro_orgao_regulador"));
         }
-        return new ClienteDTO(res.getInt(("id_cliente")), usuarioDTO, convenioDTO);
+        return new ClienteCompletoDTO(res.getInt(("id_cliente")), usuarioDTO, convenioDTO);
     }
 
 }

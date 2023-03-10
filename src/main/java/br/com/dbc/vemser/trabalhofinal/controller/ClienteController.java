@@ -1,6 +1,7 @@
 package br.com.dbc.vemser.trabalhofinal.controller;
 
 import br.com.dbc.vemser.trabalhofinal.dto.ClienteCreateDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.ClienteCompletoDTO;
 import br.com.dbc.vemser.trabalhofinal.dto.ClienteDTO;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.service.ClienteService;
@@ -14,7 +15,7 @@ import java.util.List;
 @Validated
 @RestController
 @RequestMapping("/cliente")
-public class ClienteController implements InterfaceDocumentacao<ClienteDTO, ClienteCreateDTO, Integer> {
+public class ClienteController implements InterfaceDocumentacao<ClienteCompletoDTO, ClienteCreateDTO, Integer> {
 
     private final ClienteService clienteService;
 
@@ -22,24 +23,29 @@ public class ClienteController implements InterfaceDocumentacao<ClienteDTO, Clie
         this.clienteService = clienteService;
     }
 
-    @Override
-    public ResponseEntity<List<ClienteDTO>> listAll() throws RegraDeNegocioException {
+    @GetMapping("/minimized")
+    public ResponseEntity<List<ClienteDTO>> listAllMinimized() throws RegraDeNegocioException {
         return new ResponseEntity<>(clienteService.listar(), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<List<ClienteCompletoDTO>> listAll() throws RegraDeNegocioException {
+        return new ResponseEntity<>(clienteService.listarFull(), HttpStatus.OK);
     }
 
 
     @Override
-    public ResponseEntity<ClienteDTO> getById(@PathVariable Integer id) throws RegraDeNegocioException {
+    public ResponseEntity<ClienteCompletoDTO> getById(@PathVariable Integer id) throws RegraDeNegocioException {
         return new ResponseEntity<>(clienteService.getById(id), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<ClienteDTO> create(ClienteCreateDTO cliente) throws RegraDeNegocioException {
+    public ResponseEntity<ClienteCompletoDTO> create(ClienteCreateDTO cliente) throws RegraDeNegocioException {
         return new ResponseEntity<>(clienteService.adicionar(cliente), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<ClienteDTO> update(Integer idCliente, ClienteCreateDTO cliente) throws RegraDeNegocioException {
+    public ResponseEntity<ClienteCompletoDTO> update(Integer idCliente, ClienteCreateDTO cliente) throws RegraDeNegocioException {
         return new ResponseEntity<>(clienteService.editar(idCliente, cliente), HttpStatus.OK);
     }
 
