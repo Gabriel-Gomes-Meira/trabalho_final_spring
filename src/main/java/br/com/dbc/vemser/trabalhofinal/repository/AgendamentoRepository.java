@@ -1,8 +1,13 @@
 package br.com.dbc.vemser.trabalhofinal.repository;
 
+import br.com.dbc.vemser.trabalhofinal.dto.AgendamentoDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.AgendamentoDadosDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.ClienteDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Agendamento;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -11,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@Slf4j
+@Repository
 public class AgendamentoRepository implements Repositorio<Integer, Agendamento> {
 
 
@@ -237,10 +244,23 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
 
         return agendamento;
     }
+    private AgendamentoDadosDTO getAgendamentoDTOFromResultSet(ResultSet res) throws SQLException {
+        AgendamentoDadosDTO agendamento = new AgendamentoDadosDTO();
+        agendamento.setIdAgendamento(res.getInt("id_agendamento"));
+        agendamento.setIdCliente(res.getInt("id_cliente"));
+        agendamento.setIdMedico(res.getInt("id_medico"));
+        agendamento.setTratamento(res.getString("tratamento"));
+        agendamento.setExame(res.getString("exame"));
+        agendamento.setDataHorario(LocalDateTime.parse(res.getString("data_horario"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        agendamento.setCliente(res.getString("nome_cliente"));
+        agendamento.setCliente(res.getString("nome_medico"));
+        
+        return agendamento;
+    }
 
-    public List<HashMap<String,String>> mostrarAgendamentosUsuario(Usuario usuarioAtivo) throws BancoDeDadosException {
+    public List<AgendamentoDadosDTO> mostrarAgendamentosUsuario(Usuario usuarioAtivo) throws BancoDeDadosException {
 
-        List<HashMap<String,String>> listaMaps = new ArrayList<>();
+        List<AgendamentoDadosDTO> agendamentosDoUsuario = new ArrayList<>();
         Connection con = null;
         try {
             con = ConexaoBancoDeDados.getConnection();
@@ -250,10 +270,6 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
                     "FROM AGENDAMENTO a " +
                     "INNER JOIN MEDICO m ON (m.id_medico = a.id_medico) " +
                     "INNER JOIN CLIENTE c ON (c.id_cliente = a.id_cliente) " +
-                    "INNER JOIN Usuario um ON " +
-                    "(um.id_usuario = m.id_usuario)" +
-                    " INNER JOIN Usuario uc ON" +
-                    " (uc.id_usuario = c.id_usuario)" +
                     "WHERE" + (usuarioAtivo.getTipoUsuario().getValor() == 3 ? " c.id_usuario = " : " m.id_usuario = ") + usuarioAtivo.getIdUsuario() +
                     " ORDER BY a.data_horario";
 
@@ -261,15 +277,9 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
             ResultSet res = stmt.executeQuery(sql);
 
             while(res.next()){
-                HashMap<String,String> dados = new HashMap<>();
-                dados.put("Data e horário: ", res.getString("data_horario"));
-                dados.put("Nome Cliente: ", res.getString("nome_cliente"));
-                dados.put("Nome Médico: ", res.getString("nome_medico"));
-                dados.put("Tratamento: ", res.getString("tratamento"));
-                dados.put("Exame: ", res.getString("exame"));
-                listaMaps.add(dados);
+                agendamentosDoUsuario.add(getAgendamentoDTOFromResultSet(res));
             }
-            return listaMaps;
+            return agendamentosDoUsuario;
         } catch (SQLException e) {
             throw new BancoDeDadosException(e.getCause());
         } finally {
@@ -282,6 +292,42 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
             }
         }
 
+    }
+
+    public Agendamento getAgendamento(Integer id) throws BancoDeDadosException {
+        Connection con = null;
+        Agendamento agendamento = null;
+        try {
+            con = ConexaoBancoDeDados.getConnection();
+
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT * " +
+                    "FROM AGENDAMENTO " +
+                    "WHERE id_agendamento = ?");
+
+            PreparedStatement stmt = con.prepareStatement(sql.toString());
+
+            stmt.setInt(1, id);
+
+            // Executa-se a consulta
+            ResultSet res = stmt.executeQuery();
+
+            while (res.next()) {
+                agendamento = getAgendamentoFromResultSet(res);
+            }
+            return agendamento;
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new BancoDeDadosException(e.getCause());
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

@@ -2,13 +2,15 @@ package br.com.dbc.vemser.trabalhofinal.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class AgendamentoDadosDTO extends AgendamentoDTO{
 
-    @Schema(description = "Objeto cliente do agendamento")
-    private ClienteDTO clienteDTO;
-    @Schema(description = "Objeto médico do agendamento")
-    private MedicoDTO medicoDTO;
+    @Schema(description = "Nome do cliente")
+    private String cliente;
 
+    @Schema(description = "Nome do Médico")
+    private String medico;
 }

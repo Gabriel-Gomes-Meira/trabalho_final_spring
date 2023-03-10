@@ -2,6 +2,7 @@ package br.com.dbc.vemser.trabalhofinal.service;
 
 import br.com.dbc.vemser.trabalhofinal.dto.AgendamentoCreateDTO;
 import br.com.dbc.vemser.trabalhofinal.dto.AgendamentoDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.AgendamentoDadosDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Agendamento;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
@@ -31,7 +32,9 @@ public class AgendamentoService {
         try {
             clienteService.getCliente(agendamentoCreateDTO.getIdCliente());
             medicoService.getMedico(agendamentoCreateDTO.getIdMedico());
-            return objectMapper.convertValue(agendamentoRepository.adicionar(agendamentoCreateDTO), AgendamentoDTO.class);
+            return objectMapper.convertValue(agendamentoRepository.adicionar(
+                    objectMapper.convertValue(agendamentoCreateDTO, Agendamento.class)
+            ), AgendamentoDTO.class);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no banco de dados.");
         } catch (Exception e) {
@@ -41,7 +44,7 @@ public class AgendamentoService {
 
     public void remover(Integer id) throws RegraDeNegocioException {
         try {
-            agendamentoRepository.getAgendamento();
+            agendamentoRepository.getAgendamento(id);
             agendamentoRepository.remover(id);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no banco de dados.");
@@ -52,10 +55,12 @@ public class AgendamentoService {
 
     public AgendamentoDTO editar(Integer id, AgendamentoCreateDTO agendamentoCreateDTO) throws RegraDeNegocioException {
         try {
-            agendamentoRepository.getAgendamento();
+            agendamentoRepository.getAgendamento(id);
             clienteService.getCliente(agendamentoCreateDTO.getIdCliente());
             medicoService.getMedico(agendamentoCreateDTO.getIdMedico());
-            return objectMapper.convertValue(agendamentoRepository.editar(id, agendamentoCreateDTO), AgendamentoDTO.class);
+            return objectMapper.convertValue(agendamentoRepository.editar(id,
+                    objectMapper.convertValue(agendamentoCreateDTO, Agendamento.class)
+            ), AgendamentoDTO.class);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no banco de dados.");
         } catch (Exception e) {
@@ -65,7 +70,8 @@ public class AgendamentoService {
 
     public List<AgendamentoDTO> listar() throws RegraDeNegocioException {
         try {
-            return agendamentoRepository.listar();
+            return agendamentoRepository.listar().stream().map(agendamento ->
+                    objectMapper.convertValue(agendamento, AgendamentoDTO.class)).toList();
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no banco de dados.");
         } catch (Exception e) {
@@ -73,14 +79,20 @@ public class AgendamentoService {
         }
     }
 
-    public AgendamentoDTO getAgendamento(Integer id) throws RegraDeNegocioException {
+    public  List<AgendamentoDadosDTO> listarPorUsuario(Integer idUsuario) throws RegraDeNegocioException {
+        return agendamentoRepository.mostrarAgendamentosUsuario();
+    }
+
+
+    public Agendamento getAgendamento(Integer id) throws RegraDeNegocioException {
         try {
             return agendamentoRepository.getAgendamento(id);
         } catch (BancoDeDadosException e) {
-            throw new RegraDeNegocioException("Erro no banco de dados.");
-        } catch (Exception e) {
-            throw new RegraDeNegocioException("Houve algum erro ao listar os agendamentos.");
+            throw new RegraDeNegocioException("Erro no Banco!");
         }
+    }
+    public AgendamentoDTO getAgendamentoDTO(Integer id) throws RegraDeNegocioException {
+        return objectMapper.convertValue(getAgendamento(id), AgendamentoDTO.class);
     }
 
 }

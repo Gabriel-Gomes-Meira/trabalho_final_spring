@@ -234,20 +234,20 @@ public class UsuarioRepository implements Repositorio<Integer, Usuario> {
         }
     }
 
-    public Usuario getUmId(Integer id) throws BancoDeDadosException {
+    public Usuario getUsuario(Integer id) throws BancoDeDadosException {
         Usuario usuario = null;
         Connection con = null;
         try {
             con = ConexaoBancoDeDados.getConnection();
 
             String sql = "SELECT * " +
-                    " FROM USUARIO WHERE id_usuario = "+ id;
+                        " FROM USUARIO WHERE id_usuario = ?";
 
             PreparedStatement stmt = con.prepareStatement(sql);
-//            stmt.setInt(1, id);
+            stmt.setInt(1, id);
 
             // Executa-se a consulta
-            ResultSet res = stmt.executeQuery(sql);
+            ResultSet res = stmt.executeQuery();
 
             if (res.next()) {
                 usuario = getUsuarioFromResultSet(res);

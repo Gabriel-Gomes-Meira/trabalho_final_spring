@@ -102,7 +102,7 @@ public class UsuarioService {
 
     public Usuario getUsuario(Integer id) throws RegraDeNegocioException{
         try {
-            return  usuarioRepository.getUmId(id);
+            return  usuarioRepository.getUsuario(id);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no Banco!");
         }
