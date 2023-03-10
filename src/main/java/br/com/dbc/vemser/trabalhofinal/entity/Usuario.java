@@ -1,13 +1,10 @@
 package br.com.dbc.vemser.trabalhofinal.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 @AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Data
 public class Usuario {
     private Integer idUsuario;
@@ -15,7 +12,8 @@ public class Usuario {
     private String email;
     private String nome;
     private String senha;
-    private String endereco;
+    private String cep;
+    private Integer numero;
     private String[] contatos;
     private TipoUsuario tipoUsuario;
 

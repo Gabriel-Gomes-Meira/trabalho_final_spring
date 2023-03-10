@@ -104,3 +104,8 @@ CREATE SEQUENCE seq_especialidade
 
 
 
+
+ALTER TABLE USUARIO ADD cep char(8);
+ALTER TABLE USUARIO modify cep NOT NULL;
+ALTER TABLE USUARIO ADD numero number(9);
+ALTER TABLE USUARIO modify numero NOT null;
