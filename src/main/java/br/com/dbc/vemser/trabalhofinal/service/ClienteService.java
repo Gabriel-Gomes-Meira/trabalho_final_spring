@@ -79,7 +79,7 @@ public class ClienteService {
         }
     }
 
-    private Cliente getCliente(Integer id) throws RegraDeNegocioException {
+    public Cliente getCliente(Integer id) throws RegraDeNegocioException {
         try {
             return clienteRepository.listar()
                     .stream()

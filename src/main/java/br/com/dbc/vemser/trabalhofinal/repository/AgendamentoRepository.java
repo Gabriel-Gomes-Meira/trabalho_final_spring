@@ -1,8 +1,14 @@
 package br.com.dbc.vemser.trabalhofinal.repository;
 
+import br.com.dbc.vemser.trabalhofinal.dto.AgendamentoDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.AgendamentoDadosDTO;
+import br.com.dbc.vemser.trabalhofinal.dto.ClienteDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Agendamento;
+import br.com.dbc.vemser.trabalhofinal.entity.TipoUsuario;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -11,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@Slf4j
+@Repository
 public class AgendamentoRepository implements Repositorio<Integer, Agendamento> {
 
 
@@ -27,6 +35,7 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
 
             return null;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         }
     }
@@ -40,32 +49,11 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
             Integer proximoId = this.getProximoId(con);
             agendamento.setIdAgendamento(proximoId);
 
-            StringBuilder sql = new StringBuilder();
-            sql.append("INSERT INTO AGENDAMENTO\n" +
-                    "(id_agendamento, id_medico, id_cliente, data_horario,");
+            String sql ="INSERT INTO AGENDAMENTO (id_agendamento, id_medico, id_cliente, data_horario, tratamento, " +
+                    "exame) values(?, ?, ?, TO_DATE( ?, 'yyyy/mm/dd hh24:mi'), ?, ?)";
 
-            if (agendamento.getTratamento()!= null) {
-                sql.append(" tratamento,");
-            }
-            if (agendamento.getExame()!= null) {
-                sql.append(" exame,");
-            }
+            PreparedStatement stmt = con.prepareStatement(sql);
 
-            sql.deleteCharAt(sql.length() - 1); //remove o ultimo ','
-            sql.append(") values(?, ?, ?, TO_DATE( ?, 'yyyy/mm/dd hh24:mi'),");
-
-            if (agendamento.getTratamento() != null) {
-                sql.append(" ?,");
-            }
-            if (agendamento.getExame() != null) {
-                sql.append(" ?,");
-            }
-
-            sql.deleteCharAt(sql.length() - 1); //remove o ultimo ','
-            sql.append(")");
-            PreparedStatement stmt = con.prepareStatement(sql.toString());
-
-            int index = 5;
             stmt.setInt(1, agendamento.getIdAgendamento());
             stmt.setInt(2, agendamento.getIdMedico());
             stmt.setInt(3, agendamento.getIdCliente());
@@ -73,18 +61,12 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
             stmt.setString(4, agendamento.getDataHorario().format(formatter));
 
+            stmt.setString(5, agendamento.getTratamento());
+            stmt.setString(6, agendamento.getExame());
 
-            if (agendamento.getTratamento() != null) {
-                stmt.setString(index++, agendamento.getTratamento());
-            }
-            if (agendamento.getExame() != null) {
-                stmt.setString(index, agendamento.getExame());
-            }
-
-            int res = stmt.executeUpdate();
-            System.out.println("adicionarAgendamento.res=" + res);
             return agendamento;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {
@@ -92,6 +74,7 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
                     con.close();
                 }
             } catch (SQLException e) {
+                log.error(e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -111,10 +94,10 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
 
             // Executa-se a consulta
             int res = stmt.executeUpdate();
-            System.out.println("removerAgendamentoPorId.res=" + res);
 
             return res > 0;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {
@@ -122,6 +105,7 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
                     con.close();
                 }
             } catch (SQLException e) {
+                log.error(e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -133,54 +117,27 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
         try {
             con = ConexaoBancoDeDados.getConnection();
 
-            StringBuilder sql = new StringBuilder();
-            sql.append("UPDATE AGENDAMENTO SET");
+            String sql = "UPDATE AGENDAMENTO SET id_cliente = ?, id_medico = ?,  tratamento = ?, exame = ?, " +
+                    "data_horario = TO_DATE( ?, 'yyyy/mm/dd hh24:mi')  where id_agendamento = ? ";
 
-            if (agendamento.getIdCliente()!= null) {
-                sql.append(" id_cliente = ?,");
-            }
-            if (agendamento.getIdMedico() != null) {
-                sql.append(" id_medico = ?,");
-            }
-            if (agendamento.getTratamento() != null) {
-                sql.append(" tratamento = ?,");
-            }
-            if (agendamento.getExame() != null) {
-                sql.append(" exame = ?,");
-            }
-            if (agendamento.getDataHorario() != null) {
-                sql.append(" data_horario = TO_DATE( ?, 'yyyy/mm/dd hh24:mi'),");
-            }
+            PreparedStatement stmt = con.prepareStatement(sql);
 
-            sql.deleteCharAt(sql.length() - 1); //remove o ultimo ','
-            sql.append(" where id_agendamento = ?");
-            PreparedStatement stmt = con.prepareStatement(sql.toString());
+            stmt.setInt(1, agendamento.getIdCliente());
+            stmt.setInt(2, agendamento.getIdMedico());
+            stmt.setString(3, agendamento.getTratamento());
+            stmt.setString(4, agendamento.getExame());
 
-            int index = 1;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+            String valor = agendamento.getDataHorario().format(formatter);
+            stmt.setString(5, valor);
 
-            if (agendamento.getIdCliente()!= null) {
-                stmt.setInt(index++, agendamento.getIdCliente());
-            }
-            if (agendamento.getIdMedico()!= null) {
-                stmt.setInt(index++, agendamento.getIdMedico());
-            }
-            if (agendamento.getTratamento()!= null) {
-                stmt.setString(index++, agendamento.getTratamento());
-            }
-            if (agendamento.getExame()!= null) {
-                stmt.setString(index++, agendamento.getExame());
-            }
-            if (agendamento.getDataHorario()!= null) {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
-                String valor = agendamento.getDataHorario().format(formatter);
-                stmt.setString(index++, valor);
-            }
+            stmt.setInt(6, id);
+            stmt.executeUpdate();
 
-            stmt.setInt(index, id);
-            int res = stmt.executeUpdate();
-            System.out.println("editarAgendamento.res=" + res);
+            agendamento.setIdAgendamento(id);
             return agendamento;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {
@@ -188,6 +145,7 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
                     con.close();
                 }
             } catch (SQLException e) {
+                log.error(e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -208,11 +166,11 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
             ResultSet res = stmt.executeQuery(sql);
 
             while (res.next()) {
-                Agendamento agendamento = getAgendamentoFromResultSet(res);
-                agendamentos.add(agendamento);
+                agendamentos.add(getAgendamentoFromResultSet(res));
             }
             return agendamentos;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {
@@ -220,6 +178,7 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
                     con.close();
                 }
             } catch (SQLException e) {
+                log.error(e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -237,40 +196,49 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
 
         return agendamento;
     }
+    private AgendamentoDadosDTO getAgendamentoDTOFromResultSet(ResultSet res) throws SQLException {
+        AgendamentoDadosDTO agendamento = new AgendamentoDadosDTO();
+        agendamento.setIdAgendamento(res.getInt("id_agendamento"));
+        agendamento.setIdCliente(res.getInt("id_cliente"));
+        agendamento.setIdMedico(res.getInt("id_medico"));
+        agendamento.setTratamento(res.getString("tratamento"));
+        agendamento.setExame(res.getString("exame"));
+        agendamento.setDataHorario(LocalDateTime.parse(res.getString("data_horario"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        agendamento.setCliente(res.getString("nome_cliente"));
+        agendamento.setMedico(res.getString("nome_medico"));
+        
+        return agendamento;
+    }
 
-    public List<HashMap<String,String>> mostrarAgendamentosUsuario(Usuario usuarioAtivo) throws BancoDeDadosException {
+    public List<AgendamentoDadosDTO> mostrarAgendamentosUsuario(Integer id, TipoUsuario tipoUsuario) throws BancoDeDadosException {
 
-        List<HashMap<String,String>> listaMaps = new ArrayList<>();
+        List<AgendamentoDadosDTO> agendamentosDoUsuario = new ArrayList<>();
         Connection con = null;
         try {
             con = ConexaoBancoDeDados.getConnection();
-            Statement stmt = con.createStatement();
 
-            String sql = "SELECT a.data_horario, uc.nome AS nome_cliente, um.nome AS nome_medico, a.tratamento, a.exame " +
+            String sql = "SELECT a.data_horario, cliente_usuario.nome AS nome_cliente, medico_usuario.nome AS nome_medico, a.tratamento, a.exame, " +
+                    "m.id_medico as id_medico, c.id_cliente as id_cliente, a.id_agendamento " +
                     "FROM AGENDAMENTO a " +
                     "INNER JOIN MEDICO m ON (m.id_medico = a.id_medico) " +
                     "INNER JOIN CLIENTE c ON (c.id_cliente = a.id_cliente) " +
-                    "INNER JOIN Usuario um ON " +
-                    "(um.id_usuario = m.id_usuario)" +
-                    " INNER JOIN Usuario uc ON" +
-                    " (uc.id_usuario = c.id_usuario)" +
-                    "WHERE" + (usuarioAtivo.getTipoUsuario().getValor() == 3 ? " c.id_usuario = " : " m.id_usuario = ") + usuarioAtivo.getIdUsuario() +
-                    " ORDER BY a.data_horario";
+                    "INNER JOIN USUARIO medico_usuario on (m.id_usuario = medico_usuario.id_usuario)" +
+                    "INNER JOIN USUARIO cliente_usuario on (c.id_usuario = cliente_usuario.id_usuario)" +
+                    "WHERE" + (tipoUsuario.getValor() == 3 ? " c.id_cliente = ? " : " m.id_medico = ? ") +
+                    "ORDER BY a.data_horario";
+
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, id);
 
             // Executa-se a consulta
-            ResultSet res = stmt.executeQuery(sql);
+            ResultSet res = stmt.executeQuery();
 
             while(res.next()){
-                HashMap<String,String> dados = new HashMap<>();
-                dados.put("Data e horário: ", res.getString("data_horario"));
-                dados.put("Nome Cliente: ", res.getString("nome_cliente"));
-                dados.put("Nome Médico: ", res.getString("nome_medico"));
-                dados.put("Tratamento: ", res.getString("tratamento"));
-                dados.put("Exame: ", res.getString("exame"));
-                listaMaps.add(dados);
+                agendamentosDoUsuario.add(getAgendamentoDTOFromResultSet(res));
             }
-            return listaMaps;
+            return agendamentosDoUsuario;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {
@@ -278,10 +246,85 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
                     con.close();
                 }
             } catch (SQLException e) {
+                log.error(e.getMessage());
                 e.printStackTrace();
             }
         }
+    }
 
+    public AgendamentoDadosDTO getAgendamentoDados(Integer id) throws BancoDeDadosException {
+
+        AgendamentoDadosDTO dadosAgendamento = null;
+        Connection con = null;
+        try {
+            con = ConexaoBancoDeDados.getConnection();
+
+            String sql = "SELECT a.data_horario, uc.nome AS nome_cliente, um.nome AS nome_medico, a.tratamento, a.exame " +
+                    "FROM AGENDAMENTO a " +
+                    "INNER JOIN MEDICO m ON (m.id_medico = a.id_medico) " +
+                    "INNER JOIN CLIENTE c ON (c.id_cliente = a.id_cliente) " +
+                    "WHERE a.id_agendamento = ?" ;
+
+            // Executa-se a consulta
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, id);
+            ResultSet res = stmt.executeQuery(sql);
+
+            if(res.next()){
+                dadosAgendamento = getAgendamentoDTOFromResultSet(res);
+            }
+            return dadosAgendamento;
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new BancoDeDadosException(e.getCause());
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                log.error(e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public Agendamento getAgendamento(Integer id) throws BancoDeDadosException {
+        Connection con = null;
+        Agendamento agendamento = null;
+        try {
+            con = ConexaoBancoDeDados.getConnection();
+
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT * " +
+                    "FROM AGENDAMENTO " +
+                    "WHERE id_agendamento = ?");
+
+            PreparedStatement stmt = con.prepareStatement(sql.toString());
+
+            stmt.setInt(1, id);
+
+            // Executa-se a consulta
+            ResultSet res = stmt.executeQuery();
+
+            while (res.next()) {
+                agendamento = getAgendamentoFromResultSet(res);
+            }
+            return agendamento;
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            log.error(e.getMessage());
+            throw new BancoDeDadosException(e.getCause());
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                log.error(e.getMessage());
+                e.printStackTrace();
+            }
+        }
     }
 
 }

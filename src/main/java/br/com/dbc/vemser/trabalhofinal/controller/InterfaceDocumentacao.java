@@ -67,4 +67,6 @@ public interface InterfaceDocumentacao<saida, entrada, id> {
     )
     @DeleteMapping("/{id}")
     ResponseEntity<Void> delete(@PathVariable id id) throws RegraDeNegocioException;
+
+    //getOne <TODO>
 }
