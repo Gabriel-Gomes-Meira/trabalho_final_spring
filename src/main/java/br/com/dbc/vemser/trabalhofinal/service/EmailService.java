@@ -38,10 +38,10 @@ public class EmailService {
     // USUÁRIO
 
     public void sendEmailUsuario(UsuarioDTO usuarioDTO, TipoEmail tipoEmail) throws MessagingException, TemplateException, IOException {
-            MimeMessageHelper mimeMessageHelper = buildEmailUsuario(usuarioDTO.getEmail(), tipoEmail);
-            mimeMessageHelper.setText(getUsuarioTemplate(usuarioDTO, tipoEmail), true);
+        MimeMessageHelper mimeMessageHelper = buildEmailUsuario(usuarioDTO.getEmail(), tipoEmail);
+        mimeMessageHelper.setText(getUsuarioTemplate(usuarioDTO, tipoEmail), true);
 
-            emailSender.send(mimeMessageHelper.getMimeMessage());
+        emailSender.send(mimeMessageHelper.getMimeMessage());
     }
 
     public MimeMessageHelper buildEmailUsuario(String email, TipoEmail tipoEmail) throws MessagingException {
