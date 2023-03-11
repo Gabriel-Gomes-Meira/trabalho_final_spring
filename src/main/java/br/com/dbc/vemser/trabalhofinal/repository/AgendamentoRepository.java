@@ -64,6 +64,8 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
             stmt.setString(5, agendamento.getTratamento());
             stmt.setString(6, agendamento.getExame());
 
+            stmt.executeUpdate();
+
             return agendamento;
         } catch (SQLException e) {
             log.error(e.getMessage());
@@ -296,19 +298,18 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
         try {
             con = conexaoBancoDeDados.getConnection();
 
-            StringBuilder sql = new StringBuilder();
-            sql.append("SELECT * " +
+            String sql = "SELECT * " +
                     "FROM AGENDAMENTO " +
-                    "WHERE id_agendamento = ?");
+                    "WHERE id_agendamento = ?";
 
-            PreparedStatement stmt = con.prepareStatement(sql.toString());
+            PreparedStatement stmt = con.prepareStatement(sql);
 
             stmt.setInt(1, id);
 
             // Executa-se a consulta
             ResultSet res = stmt.executeQuery();
 
-            while (res.next()) {
+            if (res.next()) {
                 agendamento = getAgendamentoFromResultSet(res);
             }
             return agendamento;

@@ -29,19 +29,21 @@ public class AgendamentoService {
 
     public AgendamentoDTO adicionar(AgendamentoCreateDTO agendamentoCreateDTO) throws RegraDeNegocioException {
         try {
-            ClienteDTO clienteAgendado = objectMapper.convertValue(clienteService.getCliente(agendamentoCreateDTO.getIdCliente()), ClienteDTO.class);
-            MedicoDTO medicoAgendado = objectMapper.convertValue(medicoService.getMedico(agendamentoCreateDTO.getIdMedico()), MedicoDTO.class);
 
             AgendamentoDTO novoAgendamento = objectMapper.convertValue(agendamentoRepository.adicionar(
                     objectMapper.convertValue(agendamentoCreateDTO, Agendamento.class)), AgendamentoDTO.class);
 
-            AgendamentoDadosDTO agendamentoDadosDTO = objectMapper.convertValue(novoAgendamento, AgendamentoDadosDTO.class);
-            agendamentoDadosDTO.setCliente(usuarioService.getById(clienteAgendado.getIdUsuario()).getNome());
-            agendamentoDadosDTO.setMedico(usuarioService.getById(medicoAgendado.getIdUsuario()).getNome());
+            AgendamentoDadosDTO agendamentoARemover = objectMapper.convertValue(novoAgendamento, AgendamentoDadosDTO.class);
+            UsuarioDTO usuarioCliente = usuarioService.getById(clienteService.getById(agendamentoARemover.getIdCliente()).getUsuario().getIdUsuario());
+            UsuarioDTO usuarioMedico = usuarioService.getById(medicoService.getMedicoDTOById(agendamentoARemover.getIdMedico()).getUsuario().getIdUsuario());
+
+            AgendamentoDadosDTO agendamentoDadosDTO = objectMapper.convertValue(agendamentoARemover, AgendamentoDadosDTO.class);
+            agendamentoDadosDTO.setCliente(usuarioCliente.getNome());
+            agendamentoDadosDTO.setMedico(usuarioMedico.getNome());
 
             try {
-                emailService.sendEmailAgendamento(usuarioService.getById(clienteAgendado.getIdUsuario()), agendamentoDadosDTO, TipoEmail.AGENDAMENTO_CRIADO_CLIENTE);
-                emailService.sendEmailAgendamento(usuarioService.getById(medicoAgendado.getIdUsuario()), agendamentoDadosDTO, TipoEmail.AGENDAMENTO_CRIADO_MEDICO);
+                emailService.sendEmailAgendamento(usuarioCliente, agendamentoDadosDTO, TipoEmail.AGENDAMENTO_CRIADO_CLIENTE);
+                emailService.sendEmailAgendamento(usuarioMedico, agendamentoDadosDTO, TipoEmail.AGENDAMENTO_CRIADO_MEDICO);
             } catch (MessagingException | TemplateException | IOException e) {
                 throw new RegraDeNegocioException("Erro ao enviar o e-mail!");
             }
@@ -55,18 +57,17 @@ public class AgendamentoService {
 
     public void remover(Integer id) throws RegraDeNegocioException {
         try {
-            AgendamentoDadosDTO agendamentoARemover = objectMapper.convertValue(agendamentoRepository.getAgendamento(id), AgendamentoDadosDTO.class);
-            ClienteDTO clienteAgendado = objectMapper.convertValue(clienteService.getCliente(agendamentoARemover.getIdCliente()), ClienteDTO.class);
-            MedicoDTO medicoAgendado = objectMapper.convertValue(medicoService.getMedico(agendamentoARemover.getIdMedico()), MedicoDTO.class);
+            AgendamentoDadosDTO agendamentoARemover = objectMapper.convertValue(getAgendamento(id), AgendamentoDadosDTO.class);
+            UsuarioDTO usuarioCliente = usuarioService.getById(clienteService.getById(agendamentoARemover.getIdCliente()).getUsuario().getIdUsuario());
+            UsuarioDTO usuarioMedico = usuarioService.getById(medicoService.getMedicoDTOById(agendamentoARemover.getIdMedico()).getUsuario().getIdUsuario());
 
-            AgendamentoDadosDTO agendamentoDadosDTO = objectMapper.convertValue(agendamentoARemover, AgendamentoDadosDTO.class);
-            agendamentoDadosDTO.setCliente(usuarioService.getById(clienteAgendado.getIdUsuario()).getNome());
-            agendamentoDadosDTO.setMedico(usuarioService.getById(medicoAgendado.getIdUsuario()).getNome());
+            agendamentoARemover.setCliente(usuarioCliente.getNome());
+            agendamentoARemover.setMedico(usuarioMedico.getNome());
 
             try {
                 agendamentoRepository.remover(id);
-                emailService.sendEmailAgendamento(usuarioService.getById(clienteAgendado.getIdUsuario()), agendamentoDadosDTO, TipoEmail.AGENDAMENTO_CANCELADO_CLIENTE);
-                emailService.sendEmailAgendamento(usuarioService.getById(medicoAgendado.getIdUsuario()), agendamentoDadosDTO, TipoEmail.AGENDAMENTO_CANCELADO_MEDICO);
+                emailService.sendEmailAgendamento(usuarioCliente, agendamentoARemover, TipoEmail.AGENDAMENTO_CANCELADO_CLIENTE);
+                emailService.sendEmailAgendamento(usuarioMedico, agendamentoARemover, TipoEmail.AGENDAMENTO_CANCELADO_MEDICO);
             } catch (MessagingException | TemplateException | IOException e) {
                 throw new RegraDeNegocioException("Erro ao enviar o e-mail!");
             }
@@ -78,16 +79,17 @@ public class AgendamentoService {
 
     public AgendamentoDTO editar(Integer id, AgendamentoCreateDTO agendamentoCreateDTO) throws RegraDeNegocioException {
         try {
+            getAgendamento(id);
             AgendamentoDadosDTO agendamentoEditado = objectMapper.convertValue(agendamentoRepository.editar(id, objectMapper.convertValue(agendamentoCreateDTO, Agendamento.class)), AgendamentoDadosDTO.class);
-            ClienteDTO clienteAgendado = objectMapper.convertValue(clienteService.getCliente(agendamentoEditado.getIdCliente()), ClienteDTO.class);
-            MedicoDTO medicoAgendado = objectMapper.convertValue(medicoService.getMedico(agendamentoEditado.getIdMedico()), MedicoDTO.class);
+            UsuarioDTO usuarioCliente = usuarioService.getById(clienteService.getById(agendamentoEditado.getIdCliente()).getUsuario().getIdUsuario());
+            UsuarioDTO usuarioMedico = usuarioService.getById(medicoService.getMedicoDTOById(agendamentoEditado.getIdMedico()).getUsuario().getIdUsuario());
 
-            agendamentoEditado.setCliente(usuarioService.getById(clienteAgendado.getIdUsuario()).getNome());
-            agendamentoEditado.setMedico(usuarioService.getById(medicoAgendado.getIdUsuario()).getNome());
+            agendamentoEditado.setCliente(usuarioCliente.getNome());
+            agendamentoEditado.setMedico(usuarioMedico.getNome());
 
             try {
-                emailService.sendEmailAgendamento(usuarioService.getById(clienteAgendado.getIdUsuario()), agendamentoEditado, TipoEmail.AGENDAMENTO_EDITADO_CLIENTE);
-                emailService.sendEmailAgendamento(usuarioService.getById(medicoAgendado.getIdUsuario()), agendamentoEditado, TipoEmail.AGENDAMENTO_EDITADO_MEDICO);
+                emailService.sendEmailAgendamento(usuarioCliente, agendamentoEditado, TipoEmail.AGENDAMENTO_EDITADO_CLIENTE);
+                emailService.sendEmailAgendamento(usuarioMedico, agendamentoEditado, TipoEmail.AGENDAMENTO_EDITADO_MEDICO);
             } catch (MessagingException | TemplateException | IOException e) {
                 throw new RegraDeNegocioException("Erro ao enviar o e-mail!");
             }
@@ -127,7 +129,11 @@ public class AgendamentoService {
 
     public Agendamento getAgendamento(Integer id) throws RegraDeNegocioException {
         try {
-            return agendamentoRepository.getAgendamento(id);
+            Agendamento agendamento = agendamentoRepository.getAgendamento(id);
+            if(agendamento == null){
+                throw new RegraDeNegocioException("Agendamento não encontrado.");
+            }
+            return agendamento;
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no banco!");
         }
@@ -135,5 +141,4 @@ public class AgendamentoService {
     public AgendamentoDTO getAgendamentoDTO(Integer id) throws RegraDeNegocioException {
         return objectMapper.convertValue(getAgendamento(id), AgendamentoDTO.class);
     }
-
 }
