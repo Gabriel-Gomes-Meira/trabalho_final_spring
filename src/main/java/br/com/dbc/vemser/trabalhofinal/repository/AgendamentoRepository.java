@@ -4,6 +4,8 @@ import br.com.dbc.vemser.trabalhofinal.dto.AgendamentoDadosDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Agendamento;
 import br.com.dbc.vemser.trabalhofinal.entity.TipoUsuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
@@ -15,8 +17,10 @@ import java.util.List;
 
 @Slf4j
 @Repository
+@RequiredArgsConstructor
 public class AgendamentoRepository implements Repositorio<Integer, Agendamento> {
 
+    private final ConexaoBancoDeDados conexaoBancoDeDados;
 
     @Override
     public Integer getProximoId(Connection connection) throws SQLException {
@@ -40,12 +44,12 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
     public Agendamento adicionar(Agendamento agendamento) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
 
             Integer proximoId = this.getProximoId(con);
             agendamento.setIdAgendamento(proximoId);
 
-            String sql ="INSERT INTO AGENDAMENTO (id_agendamento, id_medico, id_cliente, data_horario, tratamento, " +
+            String sql = "INSERT INTO AGENDAMENTO (id_agendamento, id_medico, id_cliente, data_horario, tratamento, " +
                     "exame) values(?, ?, ?, TO_DATE( ?, 'yyyy/mm/dd hh24:mi'), ?, ?)";
 
             PreparedStatement stmt = con.prepareStatement(sql);
@@ -80,7 +84,7 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
     public boolean remover(Integer id) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
 
             String sql = "DELETE FROM AGENDAMENTO WHERE ID_AGENDAMENTO = ?";
 
@@ -111,7 +115,7 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
     public Agendamento editar(Integer id, Agendamento agendamento) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
 
             String sql = "UPDATE AGENDAMENTO SET id_cliente = ?, id_medico = ?,  tratamento = ?, exame = ?, " +
                     "data_horario = TO_DATE( ?, 'yyyy/mm/dd hh24:mi')  where id_agendamento = ? ";
@@ -152,11 +156,11 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
         List<Agendamento> agendamentos = new ArrayList<>();
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
             Statement stmt = con.createStatement();
 
             String sql = "SELECT * " +
-                    "       FROM  AGENDAMENTO A " ;
+                    "       FROM  AGENDAMENTO A ";
 
             // Executa-se a consulta
             ResultSet res = stmt.executeQuery(sql);
@@ -192,6 +196,7 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
 
         return agendamento;
     }
+
     private AgendamentoDadosDTO getAgendamentoDTOFromResultSet(ResultSet res) throws SQLException {
         AgendamentoDadosDTO agendamento = new AgendamentoDadosDTO();
         agendamento.setIdAgendamento(res.getInt("id_agendamento"));
@@ -202,7 +207,7 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
         agendamento.setDataHorario(LocalDateTime.parse(res.getString("data_horario"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         agendamento.setCliente(res.getString("nome_cliente"));
         agendamento.setMedico(res.getString("nome_medico"));
-        
+
         return agendamento;
     }
 
@@ -211,7 +216,7 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
         List<AgendamentoDadosDTO> agendamentosDoUsuario = new ArrayList<>();
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
 
             String sql = "SELECT a.data_horario, cliente_usuario.nome AS nome_cliente, medico_usuario.nome AS nome_medico, a.tratamento, a.exame, " +
                     "m.id_medico as id_medico, c.id_cliente as id_cliente, a.id_agendamento " +
@@ -229,7 +234,7 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
             // Executa-se a consulta
             ResultSet res = stmt.executeQuery();
 
-            while(res.next()){
+            while (res.next()) {
                 agendamentosDoUsuario.add(getAgendamentoDTOFromResultSet(res));
             }
             return agendamentosDoUsuario;
@@ -253,20 +258,20 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
         AgendamentoDadosDTO dadosAgendamento = null;
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
 
             String sql = "SELECT a.data_horario, uc.nome AS nome_cliente, um.nome AS nome_medico, a.tratamento, a.exame " +
                     "FROM AGENDAMENTO a " +
                     "INNER JOIN MEDICO m ON (m.id_medico = a.id_medico) " +
                     "INNER JOIN CLIENTE c ON (c.id_cliente = a.id_cliente) " +
-                    "WHERE a.id_agendamento = ?" ;
+                    "WHERE a.id_agendamento = ?";
 
             // Executa-se a consulta
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setInt(1, id);
             ResultSet res = stmt.executeQuery(sql);
 
-            if(res.next()){
+            if (res.next()) {
                 dadosAgendamento = getAgendamentoDTOFromResultSet(res);
             }
             return dadosAgendamento;
@@ -289,7 +294,7 @@ public class AgendamentoRepository implements Repositorio<Integer, Agendamento> 
         Connection con = null;
         Agendamento agendamento = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
 
             StringBuilder sql = new StringBuilder();
             sql.append("SELECT * " +

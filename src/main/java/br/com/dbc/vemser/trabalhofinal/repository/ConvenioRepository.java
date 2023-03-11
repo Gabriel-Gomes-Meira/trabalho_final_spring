@@ -3,6 +3,7 @@ package br.com.dbc.vemser.trabalhofinal.repository;
 import br.com.dbc.vemser.trabalhofinal.entity.Convenio;
 import br.com.dbc.vemser.trabalhofinal.entity.Usuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
@@ -12,8 +13,10 @@ import java.util.List;
 
 @Repository
 @Slf4j
+@RequiredArgsConstructor
 public class ConvenioRepository implements Repositorio<Integer, Convenio> {
 
+    private final ConexaoBancoDeDados conexaoBancoDeDados;
 
     @Override
     public Integer getProximoId(Connection connection) throws SQLException {
@@ -37,7 +40,7 @@ public class ConvenioRepository implements Repositorio<Integer, Convenio> {
     public Convenio adicionar(Convenio convenio) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
 
             Integer proximoId = this.getProximoId(con);
             convenio.setIdConvenio(proximoId);
@@ -73,7 +76,7 @@ public class ConvenioRepository implements Repositorio<Integer, Convenio> {
     public boolean remover(Integer id) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
 
             String sql = "DELETE FROM CONVENIO WHERE ID_CONVENIO = ?";
 
@@ -101,7 +104,7 @@ public class ConvenioRepository implements Repositorio<Integer, Convenio> {
     public void remover2(Integer id) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
 
             String sql = "DELETE FROM CONVENIO WHERE ID_CONVENIO = ?";
 
@@ -130,7 +133,7 @@ public class ConvenioRepository implements Repositorio<Integer, Convenio> {
     public Convenio editar(Integer id, Convenio convenio) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
 
             String sql = "UPDATE CONVENIO SET cadastro_orgao_regulador = ?, taxa_abatimento = ? where id_convenio = ?";
             PreparedStatement stmt = con.prepareStatement(sql);
@@ -186,7 +189,7 @@ public class ConvenioRepository implements Repositorio<Integer, Convenio> {
         List<Convenio> convenios = new ArrayList<>();
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
             Statement stmt = con.createStatement();
 
             String sql = "SELECT * " +
@@ -226,7 +229,7 @@ public class ConvenioRepository implements Repositorio<Integer, Convenio> {
         Convenio convenio = null;
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
 
             String sql = "SELECT * " +
                     " FROM CONVENIO WHERE id_convenio = "+ id ;

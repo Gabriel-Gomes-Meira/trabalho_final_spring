@@ -2,6 +2,7 @@ package br.com.dbc.vemser.trabalhofinal.repository;
 
 import br.com.dbc.vemser.trabalhofinal.entity.Especialidade;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +12,10 @@ import java.util.List;
 
 @Repository
 @Slf4j
+@RequiredArgsConstructor
 public class EspecialidadeRepository implements Repositorio<Integer, Especialidade> {
+
+    private final ConexaoBancoDeDados conexaoBancoDeDados;
 
     @Override
     public Integer getProximoId(Connection connection) throws BancoDeDadosException {
@@ -35,7 +39,7 @@ public class EspecialidadeRepository implements Repositorio<Integer, Especialida
     public Especialidade adicionar(Especialidade especialidade) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
 
             Integer proximoId = this.getProximoId(con);
             especialidade.setIdEspecialidade(proximoId);
@@ -71,7 +75,7 @@ public class EspecialidadeRepository implements Repositorio<Integer, Especialida
     public boolean remover(Integer id) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
 
             String sql = "DELETE FROM ESPECIALIDADE WHERE ID_ESPECIALIDADE = ?";
 
@@ -102,7 +106,7 @@ public class EspecialidadeRepository implements Repositorio<Integer, Especialida
     public Especialidade editar(Integer id, Especialidade especialidade) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
 
             StringBuilder sql = new StringBuilder();
             sql.append("UPDATE ESPECIALIDADE SET \n");
@@ -153,7 +157,7 @@ public class EspecialidadeRepository implements Repositorio<Integer, Especialida
         List<Especialidade> listaespecialidades = new ArrayList<>();
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
             Statement stmt = con.createStatement();
 
             String sql = "SELECT * " +

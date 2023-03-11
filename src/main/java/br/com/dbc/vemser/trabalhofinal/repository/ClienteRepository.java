@@ -6,6 +6,7 @@ import br.com.dbc.vemser.trabalhofinal.dto.UsuarioDTO;
 import br.com.dbc.vemser.trabalhofinal.entity.Cliente;
 import br.com.dbc.vemser.trabalhofinal.entity.TipoUsuario;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
@@ -15,7 +16,10 @@ import java.util.List;
 
 @Repository
 @Slf4j
+@RequiredArgsConstructor
 public class ClienteRepository implements Repositorio<Integer, Cliente> {
+
+    private final ConexaoBancoDeDados conexaoBancoDeDados;
 
     @Override
     public Integer getProximoId(Connection connection) throws SQLException {
@@ -39,7 +43,7 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
     public Cliente adicionar(Cliente cliente) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
 
             Integer proximoId = this.getProximoId(con);
             cliente.setIdCliente(proximoId);
@@ -74,7 +78,7 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
     public boolean remover(Integer id) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
 
             String sql = "DELETE FROM CLIENTE WHERE ID_CLIENTE = ?";
 
@@ -104,7 +108,7 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
     public Cliente editar(Integer id, Cliente cliente) throws BancoDeDadosException {
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
 
             String sql = "UPDATE CLIENTE SET id_usuario = ?, id_convenio = ? WHERE id_cliente = ?";
             PreparedStatement stmt = con.prepareStatement(sql);
@@ -138,7 +142,7 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
         List<Cliente> clientes = new ArrayList<>();
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
             Statement stmt = con.createStatement();
 
             String sql = "Select * from Cliente ";
@@ -170,7 +174,7 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
         List<ClienteCompletoDTO> clietes = new ArrayList<>();
         Connection con = null;
         try {
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
             Statement stmt = con.createStatement();
 
             String sql = "SELECT u.id_usuario, u.tipo, u.email, u.email, u.cpf, u.nome, u.contatos, u.cep, u.numero, " +
@@ -206,7 +210,7 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
         Connection con = null;
         try {
             ClienteCompletoDTO cliente = null;
-            con = ConexaoBancoDeDados.getConnection();
+            con = conexaoBancoDeDados.getConnection();
 
             StringBuilder sql = new StringBuilder();
             sql.append("SELECT u.id_usuario, u.tipo,u.email, u.cpf, u.nome, u.contatos, u.cep, u.numero, u.nome, ci.id_cliente, " +
