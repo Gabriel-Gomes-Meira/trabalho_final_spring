@@ -30,6 +30,7 @@ MedicoRepository implements Repositorio<Integer, Medico> {
 
             return null;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         }
     }
@@ -57,6 +58,7 @@ MedicoRepository implements Repositorio<Integer, Medico> {
             stmt.executeUpdate();
             return medico;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {
@@ -87,6 +89,7 @@ MedicoRepository implements Repositorio<Integer, Medico> {
 
             return res > 0;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {
@@ -108,13 +111,13 @@ MedicoRepository implements Repositorio<Integer, Medico> {
             StringBuilder sql = new StringBuilder();
             sql.append("UPDATE MEDICO SET ");
 
-            if(medico.getCrm() != null){ //<todo> remover o if
+            if (medico.getCrm() != null) { //<todo> remover o if
                 sql.append(" crm = ?,");
             }
-            if(medico.getIdEspecialidade() != null){
+            if (medico.getIdEspecialidade() != null) {
                 sql.append(" id_especialidade = ?,");
             }
-            if(medico.getIdUsuario() != null){
+            if (medico.getIdUsuario() != null) {
                 sql.append(" id_usuario = ?,");
             }
 
@@ -126,16 +129,15 @@ MedicoRepository implements Repositorio<Integer, Medico> {
 
             int index = 1;
 
-            if(medico.getCrm() != null){
+            if (medico.getCrm() != null) {
                 stmt.setString(index++, medico.getCrm());
             }
-            if(medico.getIdEspecialidade() != null){
+            if (medico.getIdEspecialidade() != null) {
                 stmt.setInt(index++, medico.getIdEspecialidade());
             }
-            if(medico.getIdUsuario() != null){
+            if (medico.getIdUsuario() != null) {
                 stmt.setInt(index++, medico.getIdUsuario());
             }
-
 
             stmt.setInt(index, id);
 
@@ -144,6 +146,7 @@ MedicoRepository implements Repositorio<Integer, Medico> {
 
             return medico;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {
@@ -165,7 +168,7 @@ MedicoRepository implements Repositorio<Integer, Medico> {
             Statement stmt = con.createStatement();
 
             String sql = "SELECT * " +
-                    "       FROM MEDICO M " ;
+                    "       FROM MEDICO M ";
 
             // Executa-se a consulta
             ResultSet res = stmt.executeQuery(sql);
@@ -176,6 +179,7 @@ MedicoRepository implements Repositorio<Integer, Medico> {
             }
             return listaMedico;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {

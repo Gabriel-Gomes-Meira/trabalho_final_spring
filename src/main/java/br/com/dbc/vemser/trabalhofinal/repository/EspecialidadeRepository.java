@@ -2,6 +2,7 @@ package br.com.dbc.vemser.trabalhofinal.repository;
 
 import br.com.dbc.vemser.trabalhofinal.entity.Especialidade;
 import br.com.dbc.vemser.trabalhofinal.exceptions.BancoDeDadosException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
+@Slf4j
 public class EspecialidadeRepository implements Repositorio<Integer, Especialidade> {
 
     @Override
@@ -24,6 +26,7 @@ public class EspecialidadeRepository implements Repositorio<Integer, Especialida
 
             return null;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         }
     }
@@ -39,7 +42,7 @@ public class EspecialidadeRepository implements Repositorio<Integer, Especialida
 
             StringBuilder sql = new StringBuilder();
             sql.append("INSERT INTO ESPECIALIDADE\n" +
-                    "(id_especialidade, valor, nome) VALUES (?, ?, ?)" );
+                    "(id_especialidade, valor, nome) VALUES (?, ?, ?)");
 
             PreparedStatement stmt = con.prepareStatement(sql.toString());
 
@@ -51,6 +54,7 @@ public class EspecialidadeRepository implements Repositorio<Integer, Especialida
             System.out.println("adicionarEspecialidade.res=" + res);
             return especialidade;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {
@@ -81,6 +85,7 @@ public class EspecialidadeRepository implements Repositorio<Integer, Especialida
 
             return res > 0;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {
@@ -130,6 +135,7 @@ public class EspecialidadeRepository implements Repositorio<Integer, Especialida
 
             return especialidade;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {
@@ -151,7 +157,7 @@ public class EspecialidadeRepository implements Repositorio<Integer, Especialida
             Statement stmt = con.createStatement();
 
             String sql = "SELECT * " +
-                    "       FROM ESPECIALIDADE E " ;
+                    "       FROM ESPECIALIDADE E ";
 
             // Executa-se a consulta
             ResultSet res = stmt.executeQuery(sql);
@@ -162,6 +168,7 @@ public class EspecialidadeRepository implements Repositorio<Integer, Especialida
             }
             return listaespecialidades;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {

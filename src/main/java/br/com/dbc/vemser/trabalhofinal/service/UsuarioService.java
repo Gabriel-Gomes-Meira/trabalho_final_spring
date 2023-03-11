@@ -32,7 +32,7 @@ public class UsuarioService {
             Usuario usuarioCriado = usuarioRepository.adicionar(
                     validarUsuario(
                             objectMapper.convertValue(
-                                    usuario, Usuario.class), false));
+                                    usuario, Usuario.class)));
 //            try {
 ////                emailService.sendEmailUsuario(usuarioCriado);
 //            } catch (MessagingException | TemplateException | IOException e) {
@@ -61,7 +61,7 @@ public class UsuarioService {
             Usuario usarioEditar = objectMapper.convertValue(usuario, Usuario.class);
             usarioEditar.setIdUsuario(id);
 
-            UsuarioDTO usuarioEditado = objectMapper.convertValue(usuarioRepository.editar(id, validarUsuario(usarioEditar, true)), UsuarioDTO.class);
+            UsuarioDTO usuarioEditado = objectMapper.convertValue(usuarioRepository.editar(id, validarUsuario(usarioEditar)), UsuarioDTO.class);
             usuarioEditado.setEndereco(enderecoClient.getEndereco(usuarioEditado.getCep()));
             return usuarioEditado;
         } catch (BancoDeDadosException e) {
@@ -83,23 +83,19 @@ public class UsuarioService {
     }
 
     // Pensando se passamos essa validação pro Banco, afim de ganhar mais performance
-    private Usuario validarUsuario(Usuario usuario, boolean updating) throws RegraDeNegocioException {
+    private Usuario validarUsuario(Usuario usuario) throws RegraDeNegocioException {
         try {
-
-            if (updating) {
-                getUsuario(usuario.getIdUsuario());
-            }
 
             // Estou iterando com 'fori comum' pois não consigo levantar exceções dentro do forEach. Apesar de poder tratálos...
             List<Usuario> usuarios = usuarioRepository.listar();
             for (Usuario value : usuarios) {
                 //Quando estivermos atualizando, devemos verifiar se email e cpf já existem em outro usuário ALÉM do que está sendo atualizado.
-                if (value.getCpf().equals(usuario.getCpf()) && (updating &&
-                        !Objects.equals(value.getIdUsuario(), usuario.getIdUsuario()))) {
+                if (value.getCpf().equals(usuario.getCpf()) &&
+                        !Objects.equals(value.getIdUsuario(), usuario.getIdUsuario())) {
                     throw new RegraDeNegocioException("Já existe usuário com esse CPF!");
                 }
-                if (value.getEmail().equals(usuario.getEmail()) && (updating &&
-                        !Objects.equals(value.getIdUsuario(), usuario.getIdUsuario()))) {
+                if (value.getEmail().equals(usuario.getEmail()) &&
+                        !Objects.equals(value.getIdUsuario(), usuario.getIdUsuario())) {
                     throw new RegraDeNegocioException("Já existe usuário com esse e-mail!");
                 }
             }

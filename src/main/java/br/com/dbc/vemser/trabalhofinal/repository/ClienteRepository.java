@@ -30,6 +30,7 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
 
             return null;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         }
     }
@@ -56,6 +57,7 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
 
             return cliente;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {
@@ -85,6 +87,7 @@ public class ClienteRepository implements Repositorio<Integer, Cliente> {
 
             return res > 0;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {

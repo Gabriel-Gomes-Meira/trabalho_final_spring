@@ -35,25 +35,19 @@ public class EspecialidadeController implements InterfaceDocumentacao<Especialid
 
     @Override
     public ResponseEntity<EspecialidadeDTO> create(EspecialidadeCreateDTO especialidade) throws RegraDeNegocioException {
-        log.info("Criando especialidade...");
         EspecialidadeDTO especialidadeCriada = especialidadeService.adicionar(especialidade);
-        log.info("Especialidade criada!");
         return new ResponseEntity<>(especialidadeCriada, HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<EspecialidadeDTO> update(Integer id, EspecialidadeCreateDTO especialidade) throws RegraDeNegocioException {
-        log.info("Atualizando especialidade...");
         EspecialidadeDTO especialidadeAtualizada = especialidadeService.editar(id, especialidade);
-        log.info("Especialidade atualizada!");
         return new ResponseEntity<>(especialidadeAtualizada, HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<Void> delete(Integer id) throws RegraDeNegocioException {
-        log.info("Deletando especialidade...");
         especialidadeService.remover(id);
-        log.info("Especialidade deletada!");
         return ResponseEntity.ok().build();
     }
 

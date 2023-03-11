@@ -34,8 +34,6 @@ public class MedicoService {
             return getMedicoDTOById(medicoAdicionado.getIdMedico());
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Médico não adicionado por problema no banco de dados.");
-        } catch (Exception e) {
-            throw new RegraDeNegocioException("Médico não adicionado.");
         }
     }
 
@@ -45,8 +43,6 @@ public class MedicoService {
             medicoRepository.remover(id);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Médico não removido por problema no banco de dados.");
-        } catch (Exception e) {
-            throw new RegraDeNegocioException("Médico não removido.");
         }
     }
 
@@ -95,8 +91,6 @@ public class MedicoService {
             }).toList();
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Informações do médico não mostradas por problema no banco de dados.");
-        } catch (Exception e) {
-            throw new RegraDeNegocioException("Informações do médico não mostradas");
         }
     }
 

@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClienteCompletoDTO {
     @Schema(description = "Id do cliente", example = "1", required = true)
     private Integer idCliente;

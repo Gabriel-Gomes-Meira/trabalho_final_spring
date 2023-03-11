@@ -56,6 +56,7 @@ public class ConvenioRepository implements Repositorio<Integer, Convenio> {
 
             return convenio;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {
@@ -64,7 +65,6 @@ public class ConvenioRepository implements Repositorio<Integer, Convenio> {
                 }
             } catch (SQLException e) {
                 log.error(e.getMessage());
-                e.printStackTrace();
             }
         }
     }
@@ -93,7 +93,7 @@ public class ConvenioRepository implements Repositorio<Integer, Convenio> {
                     con.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
     }
@@ -121,7 +121,7 @@ public class ConvenioRepository implements Repositorio<Integer, Convenio> {
                     con.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
     }

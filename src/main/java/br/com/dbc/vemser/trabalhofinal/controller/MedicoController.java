@@ -49,25 +49,19 @@ public class MedicoController implements InterfaceDocumentacao<MedicoCompletoDTO
 
     @Override
     public ResponseEntity<MedicoCompletoDTO> create(MedicoCreateDTO medico) throws RegraDeNegocioException {
-        log.info("Criando médico...");
         MedicoCompletoDTO medicoCriado = medicoService.adicionar(medico);
-        log.info("Médico criado!");
         return new ResponseEntity<>(medicoCriado, HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<MedicoCompletoDTO> update(Integer id, MedicoCreateDTO medico) throws RegraDeNegocioException {
-        log.info("Atualizando médico...");
         MedicoCompletoDTO medicoAtualizado = medicoService.editar(id, medico);
-        log.info("Médico atualizado!");
         return new ResponseEntity<>(medicoAtualizado, HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<Void> delete(Integer id) throws RegraDeNegocioException {
-        log.info("Deletando médico...");
         medicoService.remover(id);
-        log.info("Médico deletado!");
         return ResponseEntity.ok().build();
     }
 

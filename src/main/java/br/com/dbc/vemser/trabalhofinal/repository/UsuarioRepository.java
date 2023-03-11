@@ -73,7 +73,7 @@ public class UsuarioRepository implements Repositorio<Integer, Usuario> {
                     con.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
     }
@@ -103,7 +103,7 @@ public class UsuarioRepository implements Repositorio<Integer, Usuario> {
                     con.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
     }
@@ -140,7 +140,7 @@ public class UsuarioRepository implements Repositorio<Integer, Usuario> {
                     con.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
     }
@@ -173,7 +173,7 @@ public class UsuarioRepository implements Repositorio<Integer, Usuario> {
                     con.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
     }
@@ -207,7 +207,6 @@ public class UsuarioRepository implements Repositorio<Integer, Usuario> {
 
             String sql = "SELECT count(*) AS resultado FROM USUARIO u WHERE" +
                     "(" +
-                    "NOT EXISTS (SELECT * FROM ADMINISTRATIVO a WHERE a.ID_USUARIO  = ?) AND" +
                     "NOT EXISTS (SELECT * FROM CLIENTE c  WHERE c.ID_USUARIO  = ?) AND " +
                     "NOT EXISTS (SELECT * FROM MEDICO m WHERE m.ID_USUARIO  = ?)" +
                     ") AND u.ID_USUARIO = ?";
@@ -217,11 +216,10 @@ public class UsuarioRepository implements Repositorio<Integer, Usuario> {
             stmt.setInt(1, idUsuario);
             stmt.setInt(2, idUsuario);
             stmt.setInt(3, idUsuario);
-            stmt.setInt(4, idUsuario);
 
             // Executa-se a consulta
-            ResultSet res = stmt.executeQuery(sql);
-
+            ResultSet res = stmt.executeQuery();
+            res.next();
             return res.getInt("resultado") > 0;
         } catch (SQLException e) {
             log.error(e.getMessage());
@@ -232,7 +230,7 @@ public class UsuarioRepository implements Repositorio<Integer, Usuario> {
                     con.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
     }
@@ -259,7 +257,6 @@ public class UsuarioRepository implements Repositorio<Integer, Usuario> {
             return usuario;
         } catch (SQLException e) {
             log.error(e.getMessage());
-            e.printStackTrace();
             throw new BancoDeDadosException(e.getCause());
         } finally {
             try {
@@ -267,7 +264,7 @@ public class UsuarioRepository implements Repositorio<Integer, Usuario> {
                     con.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
     }
