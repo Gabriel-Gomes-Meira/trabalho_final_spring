@@ -5,6 +5,9 @@ import br.com.dbc.vemser.trabalhofinal.dto.ClienteCompletoDTO;
 import br.com.dbc.vemser.trabalhofinal.dto.ClienteDTO;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.service.ClienteService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +26,14 @@ public class ClienteController implements InterfaceDocumentacao<ClienteCompletoD
         this.clienteService = clienteService;
     }
 
+    @Operation(summary = "Listar todos os registros", description = "Lista todos os registros sem incluir as informações da tabela usuário")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Todos os registros foram listados com sucesso"),
+                    @ApiResponse(responseCode = "403", description = "Você não tem permissão para acessar este recurso"),
+                    @ApiResponse(responseCode = "500", description = "Foi gerada uma exceção")
+            }
+    )
     @GetMapping("/simple")
     public ResponseEntity<List<ClienteDTO>> listAllSimple() throws RegraDeNegocioException {
         return new ResponseEntity<>(clienteService.listar(), HttpStatus.OK);

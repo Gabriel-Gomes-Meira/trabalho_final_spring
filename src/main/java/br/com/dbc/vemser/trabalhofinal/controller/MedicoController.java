@@ -5,6 +5,9 @@ import br.com.dbc.vemser.trabalhofinal.dto.MedicoCompletoDTO;
 import br.com.dbc.vemser.trabalhofinal.dto.MedicoDTO;
 import br.com.dbc.vemser.trabalhofinal.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.trabalhofinal.service.MedicoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,15 @@ public class MedicoController implements InterfaceDocumentacao<MedicoCompletoDTO
 
     private final MedicoService medicoService;
 
+
+    @Operation(summary = "Listar todos os registros", description = "Lista todos os registros sem incluir as informações da tabela usuário")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Todos os registros foram listados com sucesso"),
+                    @ApiResponse(responseCode = "403", description = "Você não tem permissão para acessar este recurso"),
+                    @ApiResponse(responseCode = "500", description = "Foi gerada uma exceção")
+            }
+    )
     @GetMapping("/simple")
     public ResponseEntity<List<MedicoDTO>> listAllSimple() throws RegraDeNegocioException {
         return new ResponseEntity<>(medicoService.listar(), HttpStatus.OK);

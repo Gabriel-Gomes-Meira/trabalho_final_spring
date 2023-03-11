@@ -28,8 +28,8 @@ public class UsuarioController implements InterfaceDocumentacao<UsuarioDTO, Usua
         return new ResponseEntity<>(usuarioService.listar(), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> getById(@PathVariable Integer id) throws RegraDeNegocioException {
+    @Override
+    public ResponseEntity<UsuarioDTO> getById(Integer id) throws RegraDeNegocioException {
         return new ResponseEntity<>(usuarioService.getById(id), HttpStatus.OK);
     }
     @Override
