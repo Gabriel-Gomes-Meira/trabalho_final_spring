@@ -31,16 +31,24 @@ public class UsuarioService {
         try {
             Usuario usuarioCriado = usuarioRepository.adicionar(
                     validarUsuario(
-                            objectMapper.convertValue(
-                                    usuario, Usuario.class)));
+                            objectMapper.convertValue(usuario, Usuario.class)));
 //            try {
 ////                emailService.sendEmailUsuario(usuarioCriado);
 //            } catch (MessagingException | TemplateException | IOException e) {
 //                usuarioRepository.remover(usuarioCriado.getIdUsuario());
 //                throw new RegraDeNegocioException("Erro ao enviar o e-mail!");
 //            }
+
             UsuarioDTO retorno = objectMapper.convertValue(usuarioCriado, UsuarioDTO.class);
             retorno.setEndereco(enderecoClient.getEndereco(retorno.getCep()));
+
+            try {
+                emailService.sendEmailUsuario(retorno, TipoEmail.USUARIO_CADASTRO);
+            } catch (MessagingException | TemplateException | IOException e) {
+                usuarioRepository.remover(usuarioCriado.getIdUsuario());
+                throw new RegraDeNegocioException("Erro ao enviar o e-mail!");
+            }
+
             return retorno;
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro no Banco!");
